@@ -1,0 +1,11 @@
+{
+  "analysis_mode": "debug",
+  "validation_mode": "holdout",
+  "community_sizes": [
+    10
+  ],
+  "n_cases_per_size": 1,
+  "run_sanity_check": true,
+  "run_sys_validation": false,
+  "run_case_validation": true
+}

@@ -1,0 +1,2 @@
+community_size,case_id,abs_mean_E_error,median_E_error,total_kWh_error_pct,wasserstein_E,wasserstein_R,wasserstein_C,wasserstein_Cpa,wasserstein_A,wasserstein_Qint,label_ordering_score,label_ordering_ok,renovation_R_ok,score_full,coverage_ratio_full,label_target_penalty_full
+10,1,21.63432876784188,22.876811886563615,21.60017789181392,21.63432876784188,3.0712248776762934,7.704456303095418,0.05932650779578223,3.288772708340172,0.7999386390570167,0.0,True,True,2.7588500511084635,0.2,

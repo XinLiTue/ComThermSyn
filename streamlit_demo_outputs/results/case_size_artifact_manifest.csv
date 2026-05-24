@@ -1,0 +1,2 @@
+community_size,case_id,case_name,payload_keys
+10,1,size10_case1,"['generated_df', 'real_df', 'score_df']"

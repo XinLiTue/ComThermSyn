@@ -1,0 +1,39 @@
+{
+  "task_id": "task_20260524_001_synthesis_api_unification",
+  "project_log_entry_id": "task_20260524_001_synthesis_api_unification",
+  "project_log_path": "PROJECT_LOG.md",
+  "identity_timestamp": "2026-05-24T17:13:11",
+  "git_hash": "08fd04f",
+  "prelim_run_token": "prelim_task_20260524_001_synthesis_api_unification_20260524T171311",
+  "task": "Unify thermal profile synthesis APIs while preserving legacy generator imports and algorithm behavior.",
+  "development_context": "Expose V3, V4, and V5 behavior as named thermal synthesis strategies with compatibility wrappers.",
+  "ai_conversation": "Expose V3, V4, and V5 behavior as named thermal synthesis strategies with compatibility wrappers.",
+  "code_change_summary": "Centralize thermal synthesis strategy APIs in src.thermal_synthesis and update active notebook calls to prefer synthesis terminology while retaining old generator exports.",
+  "expected_effect": "Thermal synthesis behavior is easier to navigate while existing imports and strategy outputs remain compatible.",
+  "run_context": {
+    "task_id": "task_20260524_001_synthesis_api_unification",
+    "project_log_path": "PROJECT_LOG.md",
+    "project_log_entry_id": "task_20260524_001_synthesis_api_unification",
+    "task": "Unify thermal profile synthesis APIs while preserving legacy generator imports and algorithm behavior.",
+    "development_context": "Expose V3, V4, and V5 behavior as named thermal synthesis strategies with compatibility wrappers.",
+    "code_change_summary": "Centralize thermal synthesis strategy APIs in src.thermal_synthesis and update active notebook calls to prefer synthesis terminology while retaining old generator exports.",
+    "expected_effect": "Thermal synthesis behavior is easier to navigate while existing imports and strategy outputs remain compatible.",
+    "ai_conversation": "Expose V3, V4, and V5 behavior as named thermal synthesis strategies with compatibility wrappers."
+  },
+  "run_id": "run_015_2026-05-24_17-16",
+  "artifact_id": "task_20260524_001_synthesis_api_unification_run_015_2026-05-24_17-16",
+  "validation_mode": "holdout",
+  "export_timestamp": "2026-05-24T17:16:35",
+  "validation_files": [
+    "holdout_meta.csv",
+    "holdout_train_buildings.csv",
+    "holdout_test_buildings.csv",
+    "case_validation_summary.csv",
+    "representative_day_metrics.csv",
+    "representative_day_tau.csv",
+    "representative_day_ramp.csv",
+    "representative_day_summary.csv"
+  ],
+  "timestamp": "2026-05-24T17:16:35",
+  "final_save_timestamp": "2026-05-24T17:16:35"
+}
