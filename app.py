@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import base64
 import json
 import re
 from pathlib import Path
@@ -177,6 +178,37 @@ def display_intro_slideshow() -> None:
     if missing:
         missing_names = ", ".join(path.name for path in missing)
         st.info(f"Some intro slides are missing: {missing_names}.")
+
+
+def render_intro_video(video_path: str, max_width: int = 760) -> None:
+    video_file = Path(video_path)
+    if not video_file.exists():
+        st.warning(f"Intro video not found: {video_path}")
+        return
+
+    encoded_video = base64.b64encode(video_file.read_bytes()).decode("utf-8")
+    st.markdown(
+        f"""
+        <div style="display:flex; justify-content:center; margin: 1.0rem 0 1.4rem 0;">
+            <video
+                autoplay
+                loop
+                muted
+                playsinline
+                style="
+                    width: 100%;
+                    max-width: {max_width}px;
+                    border-radius: 14px;
+                    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+                "
+            >
+                <source src="data:video/mp4;base64,{encoded_video}" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
 
 def metric_lookup(df: pd.DataFrame | None, metric: str) -> tuple[Any, str]:
@@ -466,20 +498,29 @@ st.title("ComThermSyn")
 st.caption("A Community Thermal Parameter Synthesizer for Energy System Optimization")
 
 st.sidebar.header("ComThermSyn")
+st.sidebar.caption("Public demo runtime")
 st.sidebar.subheader("Runtime Status")
-artifact_root_input = str(DEFAULT_ARTIFACT_ROOT)
-output_root_input = str(DEFAULT_OUTPUT_ROOT)
-with st.sidebar.expander("Advanced settings", expanded=False):
-    artifact_root_input = st.text_input("Artifact root", artifact_root_input)
-    output_root_input = st.text_input("Output jobs folder", output_root_input)
-artifact_root = Path(artifact_root_input)
-output_root = Path(output_root_input)
+artifact_root = DEFAULT_ARTIFACT_ROOT
+output_root = DEFAULT_OUTPUT_ROOT
 
 try:
     artifacts = cached_artifacts(str(artifact_root))
     input_schema = artifacts.get("input_schema") or DEFAULT_SCHEMA
+    runtime_config = artifacts.get("runtime_config") or {}
+    model_metadata = artifacts.get("model_metadata") or {}
+    deployment_payload = artifacts.get("deployment_model_payload") or {}
+    runtime_label = (
+        deployment_payload.get("payload_type")
+        or runtime_config.get("strategy")
+        or "public_sampler_v1"
+    )
     st.sidebar.success("Artifact root detected")
     st.sidebar.success("Public runtime ready")
+    st.sidebar.info(f"Runtime: `{runtime_label}`")
+    st.sidebar.info(
+        f"Artifact version: `{model_metadata.get('artifact_version', 'public demo')}`"
+    )
+    st.sidebar.info(f"Max buildings: `{input_schema.get('max_buildings', '-')}`")
 except Exception as exc:
     artifacts = None
     input_schema = DEFAULT_SCHEMA
@@ -488,8 +529,13 @@ except Exception as exc:
     with st.sidebar.expander("Runtime error", expanded=False):
         st.write(str(exc))
 st.sidebar.info(f"Output folder: `{output_root}`")
+st.sidebar.caption(
+    "Privacy note: public-safe artifacts only; no private training identifiers or truth tables."
+)
 
-tab_about, tab_submit, tab_load = st.tabs(["About", "Submit Case", "Load Results"])
+tab_about, tab_submit, tab_load, tab_contact = st.tabs(
+    ["About", "Submit Case", "Load Results", "Contact"]
+)
 
 with tab_about:
     st.subheader("ComThermSyn online demo")
@@ -499,7 +545,9 @@ with tab_about:
         "building/community inputs."
     )
     st.subheader("What ComThermSyn helps with")
-    display_intro_slideshow()
+    # Previous intro slideshow kept for rollback.
+    # display_intro_slideshow()
+    render_intro_video("Intro/intro.mp4", max_width=760)
     st.subheader("How ComThermSyn works")
     st.markdown(
         """
@@ -605,3 +653,27 @@ with tab_load:
                 st.session_state.pop("loaded_run_dir", None)
                 st.rerun()
         display_results(loaded_run_dir, key_prefix="loaded_result")
+
+with tab_contact:
+    st.subheader("Contact")
+    st.write(
+        "ComThermSyn is developed as an academic online demonstration for "
+        "community-level thermal parameter synthesis and energy-system analysis."
+    )
+    st.markdown(
+        """
+**Author**  
+Xin Li  
+Eindhoven University of Technology (TU/e)  
+Electrical Energy Systems group
+
+
+**Contact**  
+Contact email: x.li7@tue.nl  
+
+        """
+    )
+    # st.info(
+    #     "This public demo uses public-safe deployment artifacts and user-provided inputs. "
+    #     "It does not expose private training user identifiers or truth tables."
+    # )
