@@ -27,6 +27,14 @@ DEFAULT_ARTIFACT_ROOT = Path("artifacts_public")
 DEFAULT_OUTPUT_ROOT = Path("streamlit_demo_outputs") / "jobs"
 INTRO_DIR = Path("Intro")
 INTRO_SLIDE_COUNT = 6
+INTRO_SCENES = {
+    1: "Scene 1 - Modeling challenge",
+    2: "Scene 2 - Data confusion",
+    3: "Scene 3 - ComThermSyn processing",
+    4: "Scene 4 - Parameter synthesis",
+    5: "Scene 5 - Profile generation",
+    6: "Scene 6 - Energy-system insights",
+}
 DEFAULT_SCHEMA = {
     "required_columns": ["year", "Area", "EnergyLabel"],
     "optional_columns": ["building_id"],
@@ -146,10 +154,10 @@ def display_intro_slideshow() -> None:
                 st.rerun()
         with controls[1]:
             selected_slide = st.selectbox(
-                "Intro slide",
+                "What ComThermSyn helps with",
                 options=slide_numbers,
                 index=slide_numbers.index(current_slide),
-                format_func=lambda slide_number: f"Step {slide_number}",
+                format_func=lambda slide_number: INTRO_SCENES[slide_number],
             )
             st.session_state["intro_slide_number"] = selected_slide
         with controls[2]:
@@ -159,9 +167,10 @@ def display_intro_slideshow() -> None:
                 st.rerun()
 
         selected_path = dict(available)[st.session_state["intro_slide_number"]]
+        selected_title = INTRO_SCENES[st.session_state["intro_slide_number"]]
         st.image(
             str(selected_path),
-            caption=f"Step {st.session_state['intro_slide_number']}",
+            caption=selected_title,
             use_container_width=True,
         )
 
