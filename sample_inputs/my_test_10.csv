@@ -1,0 +1,11 @@
+building_id,year,Area,EnergyLabel
+test_10_1,1968,95,D
+test_10_2,1987,120,C
+test_10_3,2003,145,A
+test_10_4,1996,130,B
+test_10_5,1950,100,B
+test_10_6,1960,150,B
+test_10_7,1950,95,C
+test_10_8,1964,110,B
+test_10_9,1970,130,B
+test_10_10,1985,100,A

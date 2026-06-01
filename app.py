@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 from typing import Any
 
@@ -8,14 +9,30 @@ import pandas as pd
 import plotly.express as px
 import streamlit as st
 
+from src.artifact_io import load_deployment_artifacts, validate_public_artifact_safety
+from src.deploy_runtime import (
+    build_streamlit_output_package,
+    run_deployment_synthesis,
+    validate_community_input,
+)
+
 
 st.set_page_config(
-    page_title="Community Thermal Profile Generation Demo",
+    page_title="ComThermSyn",
     layout="wide",
 )
 
 
-DEFAULT_RUN_DIR = Path("streamlit_demo_outputs")
+DEFAULT_ARTIFACT_ROOT = Path("artifacts_public")
+DEFAULT_OUTPUT_ROOT = Path("streamlit_demo_outputs") / "jobs"
+DEFAULT_SCHEMA = {
+    "required_columns": ["year", "Area", "EnergyLabel"],
+    "optional_columns": ["building_id"],
+    "allowed_energy_labels": ["A", "B", "C", "D", "E", "F", "G", "unknown", "0"],
+    "year_range": [1900, 2025],
+    "area_range": [20, 400],
+    "max_buildings": 100,
+}
 
 
 def load_json(path: Path) -> dict[str, Any] | None:
@@ -38,67 +55,49 @@ def load_csv(path: Path) -> pd.DataFrame | None:
         return None
 
 
-def maybe_df(path: Path, label: str) -> pd.DataFrame | None:
-    df = load_csv(path)
-    if df is None:
-        st.info(f"{label} not available: `{path}`")
-    return df
+@st.cache_resource(show_spinner=False)
+def cached_artifacts(artifact_root: str) -> dict[str, Any]:
+    artifacts = load_deployment_artifacts(Path(artifact_root))
+    validate_public_artifact_safety(artifacts)
+    return artifacts
 
 
-def filter_df(
-    df: pd.DataFrame | None,
-    *,
-    community_size: Any = None,
-    case_name: Any = None,
-    weather_kind: Any = None,
-) -> pd.DataFrame | None:
-    if df is None:
-        return None
-    out = df.copy()
-    if community_size is not None and "community_size" in out.columns:
-        out = out[out["community_size"].astype(str) == str(community_size)]
-    if case_name is not None and "case_name" in out.columns:
-        out = out[out["case_name"].astype(str) == str(case_name)]
-    if weather_kind is not None and "weather_kind" in out.columns:
-        out = out[out["weather_kind"].astype(str) == str(weather_kind)]
-    return out
+def safe_run_id(raw_run_id: str) -> str:
+    run_id = raw_run_id.strip()
+    if not run_id:
+        raise ValueError("Enter a run_id.")
+    if not re.fullmatch(r"[A-Za-z0-9_-]+", run_id):
+        raise ValueError("run_id may only contain letters, numbers, underscores, and hyphens.")
+    return run_id
 
 
-def detect_first_column(df: pd.DataFrame | None, candidates: list[str]) -> str | None:
-    if df is None:
-        return None
-    cols_lower = {str(c).lower(): c for c in df.columns}
-    for cand in candidates:
-        if cand.lower() in cols_lower:
-            return cols_lower[cand.lower()]
-    return None
+def default_input_table(schema: dict[str, Any]) -> pd.DataFrame:
+    allowed_labels = schema.get("allowed_energy_labels") or ["A", "B", "C"]
+    return pd.DataFrame(
+        [
+            {
+                "building_id": "building_1",
+                "year": 1985,
+                "Area": 95.0,
+                "EnergyLabel": allowed_labels[2] if len(allowed_labels) > 2 else allowed_labels[0],
+            },
+            {
+                "building_id": "building_2",
+                "year": 2001,
+                "Area": 120.0,
+                "EnergyLabel": allowed_labels[1] if len(allowed_labels) > 1 else allowed_labels[0],
+            },
+            {"building_id": "building_3", "year": 2018, "Area": 82.0, "EnergyLabel": allowed_labels[0]},
+        ]
+    )
 
 
-def numeric_plot_columns(df: pd.DataFrame | None) -> list[str]:
-    if df is None:
-        return []
-    candidates = [
-        "R",
-        "C",
-        "A",
-        "Q",
-        "Qint",
-        "E_std",
-        "E_std_full_per_m2",
-        "annual_heating_kwh",
-        "annual_heating_mwh",
-        "E_std_annual_per_m2",
-        "E_proxy_annual_per_m2",
-        "annual_heat_kwh",
-        "annual_heat_mwh",
-        "annual_heat_kwh_per_m2",
-        "peak_heat_kw",
-    ]
-    out = []
-    for col in candidates:
-        if col in df.columns and pd.api.types.is_numeric_dtype(df[col]):
-            out.append(col)
-    return out
+def schema_columns(schema: dict[str, Any]) -> list[str]:
+    columns = list(schema.get("optional_columns") or [])
+    for column in schema.get("required_columns") or []:
+        if column not in columns:
+            columns.append(column)
+    return columns
 
 
 def df_download(df: pd.DataFrame | None, label: str, filename: str) -> None:
@@ -112,456 +111,426 @@ def df_download(df: pd.DataFrame | None, label: str, filename: str) -> None:
     )
 
 
-def compact_building_input_view(df: pd.DataFrame | None) -> pd.DataFrame | None:
+def metric_lookup(df: pd.DataFrame | None, metric: str) -> tuple[Any, str]:
+    if df is None or "metric" not in df.columns:
+        return None, ""
+    rows = df[df["metric"].astype(str) == metric]
+    if rows.empty:
+        return None, ""
+    row = rows.iloc[0]
+    return row.get("value"), str(row.get("unit", ""))
+
+
+def first_existing_column(df: pd.DataFrame | None, candidates: list[str]) -> str | None:
     if df is None:
         return None
-    preferred = [
-        "community_size",
-        "case_id",
-        "case_name",
-        "building_id",
-        "construction_year",
-        "floor_area",
-        "energy_label",
-    ]
-    cols = [col for col in preferred if col in df.columns]
-    return df[cols].copy() if cols else df.copy()
+    columns_by_lower = {str(column).lower(): column for column in df.columns}
+    for candidate in candidates:
+        if candidate.lower() in columns_by_lower:
+            return columns_by_lower[candidate.lower()]
+    return None
 
 
-def representative_buildings(df: pd.DataFrame | None) -> pd.DataFrame | None:
-    if df is None or len(df) == 0 or "annual_heat_kwh" not in df.columns:
+def display_metric(label: str, value: Any, unit: str = "") -> None:
+    if value is None:
+        st.metric(label, "-")
+        return
+    try:
+        number = float(value)
+        formatted = f"{number:,.1f}"
+    except Exception:
+        formatted = str(value)
+    st.metric(label, f"{formatted} {unit}".strip())
+
+
+def result_paths(run_dir: Path) -> dict[str, Path]:
+    return {
+        "synthetic": run_dir / "results" / "generated_building_parameters.csv",
+        "annual": run_dir / "results" / "community_annual_energy_summary.csv",
+        "profile": run_dir / "results" / "typical_day_community_profile.csv",
+        "dynamic": run_dir / "results" / "community_dynamic_metrics.csv",
+    }
+
+
+def load_result_tables(run_dir: Path) -> dict[str, pd.DataFrame | None]:
+    paths = result_paths(run_dir)
+    return {name: load_csv(path) for name, path in paths.items()}
+
+
+def scenario_column(profile_df: pd.DataFrame | None) -> str | None:
+    return first_existing_column(
+        profile_df,
+        ["display_day_label", "weather_day", "scenario", "scenario_label", "weather_kind", "typical_day_id"],
+    )
+
+
+def time_column(profile_df: pd.DataFrame | None) -> str | None:
+    return first_existing_column(profile_df, ["time", "datetime", "timestamp", "hour", "timestep", "timestep_index"])
+
+
+def heat_column(profile_df: pd.DataFrame | None) -> str | None:
+    return first_existing_column(
+        profile_df,
+        [
+            "heat_kw",
+            "heating_power_kw",
+            "p_heat_kw",
+            "community_heat_kw",
+            "thermal_power_kw",
+            "synthesized_heat_kw",
+        ],
+    )
+
+
+def widget_key_from_path(run_dir: Path) -> str:
+    return re.sub(r"[^A-Za-z0-9_]+", "_", str(run_dir))
+
+
+def filter_profile(
+    profile_df: pd.DataFrame | None,
+    key_prefix: str,
+) -> tuple[pd.DataFrame | None, str | None, str | None]:
+    if profile_df is None or profile_df.empty:
+        st.info("typical_day_community_profile.csv not available.")
+        return None, None, None
+
+    scenario_col = scenario_column(profile_df)
+    building_col = first_existing_column(profile_df, ["building_id", "building", "building_name"])
+    time_col = time_column(profile_df)
+    demand_col = heat_column(profile_df)
+    if time_col is None or demand_col is None:
+        st.info("Could not detect time or heat-demand columns in the typical-day profile.")
+        return None, None, None
+
+    work = profile_df.copy()
+    control_cols = st.columns(2)
+    with control_cols[0]:
+        if scenario_col is not None:
+            scenarios = sorted(work[scenario_col].dropna().astype(str).unique().tolist())
+            selected_scenario = st.selectbox(
+                "Weather day/scenario",
+                ["All available scenarios"] + scenarios,
+                key=f"{key_prefix}_scenario",
+            )
+            if selected_scenario != "All available scenarios":
+                work = work[work[scenario_col].astype(str) == selected_scenario].copy()
+        else:
+            st.info("Community-level profile only: no scenario column found.")
+
+    with control_cols[1]:
+        if building_col is not None:
+            buildings = sorted(work[building_col].dropna().astype(str).unique().tolist())
+            selected_scope = st.selectbox(
+                "Building scope",
+                ["Community total", "All buildings"] + buildings,
+                key=f"{key_prefix}_building_scope",
+            )
+            if selected_scope == "Community total":
+                group_cols = [time_col]
+                if scenario_col is not None:
+                    group_cols.insert(0, scenario_col)
+                work = work.groupby(group_cols, as_index=False)[demand_col].sum()
+            elif selected_scope != "All buildings":
+                work = work[work[building_col].astype(str) == selected_scope].copy()
+        else:
+            st.selectbox(
+                "Building scope",
+                ["Community total"],
+                disabled=True,
+                key=f"{key_prefix}_building_scope",
+            )
+
+    return work, time_col, demand_col
+
+
+def infer_timestep_hours(profile_df: pd.DataFrame, time_col: str) -> float | None:
+    values = profile_df[time_col]
+    if pd.api.types.is_numeric_dtype(values):
+        ordered = pd.to_numeric(values, errors="coerce").dropna().sort_values()
+        diffs = ordered.diff().dropna()
+        diffs = diffs[diffs > 0]
+        if not diffs.empty:
+            step = float(diffs.median())
+            return step if step <= 6 else None
         return None
-    work = df.copy().sort_values("annual_heat_kwh").reset_index(drop=True)
-    if len(work) == 0:
+
+    parsed = pd.to_datetime(values, errors="coerce").dropna().sort_values()
+    diffs = parsed.diff().dropna().dt.total_seconds() / 3600.0
+    diffs = diffs[diffs > 0]
+    if diffs.empty:
         return None
-    idx_min = 0
-    idx_max = len(work) - 1
-    idx_mid = int((work["annual_heat_kwh"] - work["annual_heat_kwh"].median()).abs().idxmin())
-    rows = [
-        {"role": "minimum", **work.iloc[idx_min].to_dict()},
-        {"role": "middle", **work.iloc[idx_mid].to_dict()},
-        {"role": "maximum", **work.iloc[idx_max].to_dict()},
-    ]
-    return pd.DataFrame(rows)
+    return float(diffs.median())
 
 
-def show_metric_row(items: list[tuple[str, Any]]) -> None:
-    cols = st.columns(len(items))
-    for col, (label, value) in zip(cols, items):
-        display_value = "-" if value is None else value
-        col.metric(label, display_value)
-
-
-def collect_options(
-    dfs: list[pd.DataFrame | None],
-    column: str,
-) -> list[Any]:
-    values: set[Any] = set()
-    for df in dfs:
-        if df is not None and column in df.columns:
-            for val in df[column].dropna().tolist():
-                values.add(val)
-    return sorted(values, key=lambda x: str(x))
-
-
-def plot_distribution(df: pd.DataFrame, column: str) -> None:
-    if column not in df.columns:
-        st.info(f"Column `{column}` not available.")
-        return
-    fig = px.histogram(
-        df,
-        x=column,
-        color="case_name" if "case_name" in df.columns else None,
-        marginal="box",
-        nbins=30,
-        title=f"Distribution of {column}",
-    )
-    st.plotly_chart(fig, use_container_width=True)
-
-
-def plot_real_vs_generated_rca(
-    real_df: pd.DataFrame | None,
-    generated_df: pd.DataFrame | None,
-) -> None:
-    if real_df is None or generated_df is None or len(real_df) == 0 or len(generated_df) == 0:
-        st.info("Need both real input rows and generated rows to draw the RCA scatter.")
+def plot_typical_day_profile(profile_df: pd.DataFrame | None, key_prefix: str) -> None:
+    filtered_df, time_col, demand_col = filter_profile(profile_df, key_prefix)
+    if filtered_df is None or time_col is None or demand_col is None:
         return
 
-    real_cols = {"R", "C", "A"}
-    gen_cols = {"R", "C", "A"}
-    if not real_cols.issubset(real_df.columns) or not gen_cols.issubset(generated_df.columns):
-        st.info("R/C/A columns not available for the real-vs-generated RCA scatter.")
-        return
-
-    real_plot = real_df.copy()
-    real_plot["source_group"] = "real_input_pool"
-    gen_plot = generated_df.copy()
-    gen_plot["source_group"] = "generated"
-    plot_df = pd.concat([real_plot, gen_plot], ignore_index=True, sort=False)
-
-    fig = px.scatter(
-        plot_df,
-        x="R",
-        y="C",
-        color="source_group",
-        size="A" if "A" in plot_df.columns else None,
-        hover_data=[c for c in ["case_name", "building_id", "A", "Qint", "EnergyLabel", "energy_label"] if c in plot_df.columns],
-        title="Real vs Generated RCA Distribution",
-        opacity=0.75,
-    )
-    st.plotly_chart(fig, use_container_width=True)
-
-
-def plot_energy_profile(df: pd.DataFrame | None) -> None:
-    if df is None or len(df) == 0:
-        st.info("No 24h profile data available for the current selection.")
-        return
-
-    time_col = detect_first_column(df, ["time", "datetime", "timestamp"])
-    y_col = detect_first_column(
-        df,
-        ["heat_kw", "heating_power_kw", "p_heat_kw", "power_kw", "hp_power_kw"],
-    )
-    if time_col is None or y_col is None:
-        st.info("Could not detect time or heating-power columns in selected_24h_profiles.csv.")
-        return
-
-    plot_df = df.copy()
-    plot_df[time_col] = pd.to_datetime(plot_df[time_col], errors="coerce")
-    plot_df = plot_df.dropna(subset=[time_col])
+    color_col = "display_day_label" if "display_day_label" in profile_df.columns else None
+    if color_col not in filtered_df.columns:
+        color_col = scenario_column(filtered_df)
+    if color_col is None:
+        color_col = first_existing_column(filtered_df, ["building_id", "building", "building_name"])
 
     fig = px.line(
-        plot_df,
+        filtered_df,
         x=time_col,
-        y=y_col,
-        color="role" if "role" in plot_df.columns else None,
-        facet_col="weather_kind" if "weather_kind" in plot_df.columns and plot_df["weather_kind"].nunique() > 1 else None,
-        title="Selected 24h Heating Power Profiles",
-    )
-    fig.update_layout(legend_title_text="role")
-    st.plotly_chart(fig, use_container_width=True)
-
-
-def plot_pit_histogram(df: pd.DataFrame | None) -> None:
-    if df is None or "pit" not in df.columns:
-        st.info("No PIT samples available.")
-        return
-    fig = px.histogram(
-        df,
-        x="pit",
-        color="variable" if "variable" in df.columns else None,
-        nbins=20,
-        barmode="overlay",
-        title="PIT Histogram",
+        y=demand_col,
+        color=color_col,
+        title="Typical-Day Heat Demand Profile",
+        labels={time_col: "Time", demand_col: "Heat demand (kW)"},
     )
     st.plotly_chart(fig, use_container_width=True)
 
-
-def plot_status_counts(df: pd.DataFrame | None, title: str) -> None:
-    if df is None or len(df) == 0:
-        return
-    for col in ["status", "check_status", "sanity_pass"]:
-        if col in df.columns:
-            counts = df[col].astype(str).value_counts(dropna=False).reset_index()
-            counts.columns = [col, "count"]
-            fig = px.bar(counts, x=col, y="count", title=title)
-            st.plotly_chart(fig, use_container_width=True)
-            return
-
-
-st.title("Community Thermal Profile Generation Demo")
-
-st.sidebar.header("Demo Controls")
-run_dir_input = st.sidebar.text_input("Demo run folder", str(DEFAULT_RUN_DIR))
-run_dir = Path(run_dir_input)
-
-input_config = load_json(run_dir / "input_config.json") or {}
-manifest = load_json(run_dir / "manifest.json") or {}
-
-building_inputs_df = load_csv(run_dir / "inputs" / "building_inputs.csv")
-generated_rcaq_df = load_csv(run_dir / "results" / "generated_rcaq.csv")
-candidate_scores_df = load_csv(run_dir / "results" / "candidate_scores.csv")
-case_size_summary_df = load_csv(run_dir / "results" / "case_size_summary.csv")
-case_size_detail_df = load_csv(run_dir / "results" / "case_size_detail.csv")
-annual_building_df = load_csv(run_dir / "results" / "annual_building_summary.csv")
-annual_community_df = load_csv(run_dir / "results" / "annual_community_summary.csv")
-profiles_df = load_csv(run_dir / "results" / "selected_24h_profiles.csv")
-
-validation_summary_df = load_csv(run_dir / "validation" / "validation_summary.csv")
-sanity_check_df = load_csv(run_dir / "validation" / "sanity_check.csv")
-conditional_validation_df = load_csv(run_dir / "validation" / "conditional_validation.csv")
-monotonicity_df = load_csv(run_dir / "validation" / "monotonicity_validation.csv")
-pit_validation_df = load_csv(run_dir / "validation" / "pit_validation.csv")
-case_validation_df = load_csv(run_dir / "validation" / "case_validation.csv")
-
-all_dfs = [
-    building_inputs_df,
-    generated_rcaq_df,
-    candidate_scores_df,
-    case_size_summary_df,
-    case_size_detail_df,
-    annual_building_df,
-    annual_community_df,
-    profiles_df,
-    sanity_check_df,
-    conditional_validation_df,
-    monotonicity_df,
-    pit_validation_df,
-    case_validation_df,
-]
-
-community_size_options = collect_options(all_dfs, "community_size")
-case_name_options = collect_options(all_dfs, "case_name")
-weather_kind_options = collect_options(all_dfs, "weather_kind")
-
-selected_community_size = st.sidebar.selectbox(
-    "community_size",
-    options=[None] + community_size_options,
-    format_func=lambda x: "All" if x is None else str(x),
-)
-selected_case_name = st.sidebar.selectbox(
-    "case_name",
-    options=[None] + case_name_options,
-    format_func=lambda x: "All" if x is None else str(x),
-)
-selected_weather_kind = st.sidebar.selectbox(
-    "weather_kind",
-    options=[None] + weather_kind_options,
-    format_func=lambda x: "All" if x is None else str(x),
-)
-
-tab_input, tab_results, tab_profiles, tab_validation = st.tabs(
-    ["Input Setup", "Generation Results", "Energy Profiles", "Validation"]
-)
-
-with tab_input:
-    st.subheader("Run Settings")
-    show_metric_row(
-        [
-            ("analysis_mode", input_config.get("analysis_mode")),
-            ("community_size", input_config.get("community_size_or_building_number")),
-            ("n_cases_per_size", input_config.get("n_cases_per_size")),
-            ("candidate_number", input_config.get("candidate_number")),
-        ]
-    )
-    show_metric_row(
-        [
-            ("top_k_proxy", input_config.get("top_k_proxy")),
-            ("top_k_full", input_config.get("top_k_full")),
-            ("weather_year", input_config.get("weather_year")),
-            ("sunny_day", (input_config.get("selected_weather_days") or {}).get("sunny")),
-        ]
-    )
-    show_metric_row(
-        [
-            ("cloudy_day", (input_config.get("selected_weather_days") or {}).get("cloudy")),
-            ("run_sanity_check", input_config.get("run_sanity_check")),
-            ("run_sys_validation", input_config.get("run_sys_validation")),
-            ("run_case_validation", input_config.get("run_case_validation")),
-        ]
-    )
-
-    with st.expander("Important Hyperparameters", expanded=False):
-        st.json(input_config.get("important_hyperparameters", {}))
-
-    st.subheader("Building Inputs")
-    building_inputs_filtered = filter_df(
-        building_inputs_df,
-        community_size=selected_community_size,
-        case_name=selected_case_name,
-    )
-    if building_inputs_filtered is None:
-        st.info("building_inputs.csv not available.")
-    else:
-        st.dataframe(compact_building_input_view(building_inputs_filtered), use_container_width=True)
-        df_download(building_inputs_filtered, "Download building_inputs.csv", "building_inputs.csv")
-
-with tab_results:
-    st.subheader("Generated Building Profiles")
-    real_inputs_filtered = filter_df(
-        building_inputs_df,
-        community_size=selected_community_size,
-        case_name=selected_case_name,
-    )
-    generated_filtered = filter_df(
-        generated_rcaq_df,
-        community_size=selected_community_size,
-        case_name=selected_case_name,
-    )
-    if generated_filtered is None:
-        st.info("generated_rcaq.csv not available.")
-    else:
-        st.dataframe(generated_filtered, use_container_width=True)
-        df_download(generated_filtered, "Download generated_rcaq.csv", "generated_rcaq.csv")
-
-        plot_cols = numeric_plot_columns(generated_filtered)
-        if plot_cols:
-            selected_plot_col = st.selectbox("Distribution column", plot_cols, key="dist_col")
-            plot_distribution(generated_filtered, selected_plot_col)
-        else:
-            st.info("No numeric distribution columns detected for generated_rcaq.csv.")
-
-    st.subheader("Real vs Generated RCA Scatter")
-    plot_real_vs_generated_rca(real_inputs_filtered, generated_filtered)
-
-    st.subheader("Community-Level Results")
-    col1, col2 = st.columns(2)
-    with col1:
-        if case_size_summary_df is not None:
-            summary_filtered = filter_df(case_size_summary_df, community_size=selected_community_size)
-            st.dataframe(summary_filtered, use_container_width=True)
-            df_download(summary_filtered, "Download case_size_summary.csv", "case_size_summary.csv")
-        else:
-            st.info("case_size_summary.csv not available.")
-    with col2:
-        if case_size_detail_df is not None:
-            detail_filtered = filter_df(
-                case_size_detail_df,
-                community_size=selected_community_size,
-                case_name=selected_case_name,
+    with st.expander("Heat pump electricity estimate", expanded=False):
+        use_hp = st.checkbox(
+            "Use heat pump conversion",
+            value=False,
+            key=f"{key_prefix}_use_hp",
+        )
+        cop = st.number_input(
+            "COP",
+            min_value=0.1,
+            value=3.0,
+            step=0.1,
+            format="%g",
+            key=f"{key_prefix}_cop",
+        )
+        if use_hp:
+            hp_df = filtered_df.copy()
+            hp_df["hp_electricity_kw"] = pd.to_numeric(hp_df[demand_col], errors="coerce") / cop
+            hp_fig = px.line(
+                hp_df,
+                x=time_col,
+                y="hp_electricity_kw",
+                color=color_col if color_col in hp_df.columns else None,
+                title="Heat Pump Electricity Profile",
+                labels={time_col: "Time", "hp_electricity_kw": "Electricity demand (kW)"},
             )
-            st.dataframe(detail_filtered, use_container_width=True)
-            df_download(detail_filtered, "Download case_size_detail.csv", "case_size_detail.csv")
-        else:
-            st.info("case_size_detail.csv not available.")
+            st.plotly_chart(hp_fig, use_container_width=True)
 
-    st.subheader("Annual Energy Summaries")
-    col3, col4 = st.columns(2)
-    with col3:
-        annual_building_filtered = filter_df(
-            annual_building_df,
-            community_size=selected_community_size,
-            case_name=selected_case_name,
-        )
-        if annual_building_filtered is not None:
-            st.dataframe(annual_building_filtered, use_container_width=True)
-            df_download(
-                annual_building_filtered,
-                "Download annual_building_summary.csv",
-                "annual_building_summary.csv",
-            )
-        else:
-            st.info("annual_building_summary.csv not available.")
-    with col4:
-        annual_community_filtered = filter_df(
-            annual_community_df,
-            community_size=selected_community_size,
-            case_name=selected_case_name,
-        )
-        if annual_community_filtered is not None:
-            st.dataframe(annual_community_filtered, use_container_width=True)
-            df_download(
-                annual_community_filtered,
-                "Download annual_community_summary.csv",
-                "annual_community_summary.csv",
-            )
-        else:
-            st.info("annual_community_summary.csv not available.")
-
-    with st.expander("Candidate Scores", expanded=False):
-        candidate_filtered = filter_df(
-            candidate_scores_df,
-            community_size=selected_community_size,
-            case_name=selected_case_name,
-        )
-        if candidate_filtered is not None:
-            st.dataframe(candidate_filtered, use_container_width=True)
-            df_download(candidate_filtered, "Download candidate_scores.csv", "candidate_scores.csv")
-        else:
-            st.info("candidate_scores.csv not available.")
-
-with tab_profiles:
-    st.subheader("24h Heating Power Profiles")
-    annual_building_filtered = filter_df(
-        annual_building_df,
-        community_size=selected_community_size,
-        case_name=selected_case_name,
-    )
-    representative_df = representative_buildings(annual_building_filtered)
-
-    selected_role = None
-    if representative_df is not None and len(representative_df):
-        st.markdown("**Selected exported buildings for profile display**")
-        st.dataframe(
-            representative_df[
-                [col for col in ["role", "building_id", "Area", "EnergyLabel", "annual_heat_kwh", "annual_heat_kwh_per_m2", "peak_heat_kw"] if col in representative_df.columns]
-            ],
-            use_container_width=True,
-        )
-        role_options = representative_df["role"].astype(str).tolist()
-        selected_role = st.selectbox(
-            "Select exported result",
-            options=["All selected roles"] + role_options,
-            index=0,
-        )
-    else:
-        st.info("Representative minimum/middle/maximum building summary is not available for the current selection.")
-
-    profiles_filtered = filter_df(
-        profiles_df,
-        community_size=selected_community_size,
-        case_name=selected_case_name,
-        weather_kind=selected_weather_kind,
-    )
-    if (
-        profiles_filtered is not None
-        and selected_role is not None
-        and selected_role != "All selected roles"
-        and "role" in profiles_filtered.columns
-    ):
-        profiles_filtered = profiles_filtered[
-            profiles_filtered["role"].astype(str) == str(selected_role)
-        ].copy()
-
-    plot_energy_profile(profiles_filtered)
-    if profiles_filtered is not None:
-        st.dataframe(profiles_filtered, use_container_width=True)
-        df_download(
-            profiles_filtered,
-            "Download selected_24h_profiles.csv",
-            "selected_24h_profiles.csv",
-        )
-
-with tab_validation:
-    st.subheader("Validation Summary")
-    if validation_summary_df is not None:
-        st.dataframe(validation_summary_df, use_container_width=True)
-        df_download(
-            validation_summary_df,
-            "Download validation_summary.csv",
-            "validation_summary.csv",
-        )
-    else:
-        st.info("validation_summary.csv not available.")
-
-    st.subheader("Validation Charts")
-    plot_pit_histogram(pit_validation_df)
-    plot_status_counts(sanity_check_df, "Sanity Check Status Counts")
-    plot_status_counts(case_validation_df, "Case Validation Status Counts")
-
-    validation_tables = [
-        ("Sanity Check", sanity_check_df, "sanity_check.csv"),
-        ("Conditional Validation", conditional_validation_df, "conditional_validation.csv"),
-        ("Monotonicity Validation", monotonicity_df, "monotonicity_validation.csv"),
-        ("PIT Validation", pit_validation_df, "pit_validation.csv"),
-        ("Case Validation", case_validation_df, "case_validation.csv"),
-    ]
-    for title, df, filename in validation_tables:
-        with st.expander(title, expanded=False):
-            if df is None:
-                st.info(f"{filename} not available.")
+            timestep_hours = infer_timestep_hours(hp_df, time_col)
+            if timestep_hours is None:
+                st.info("Could not infer timestep duration, so only the kW profile is shown.")
             else:
-                st.dataframe(df, use_container_width=True)
-                df_download(df, f"Download {filename}", filename)
+                electricity_kwh = float(hp_df["hp_electricity_kw"].dropna().sum() * timestep_hours)
+                display_metric("Selected-profile HP electricity consumption", electricity_kwh, "kWh")
 
-with st.sidebar.expander("Manifest", expanded=False):
-    if manifest:
-        st.json(
-            {
-                "export_root": manifest.get("export_root"),
-                "saved_files": len(manifest.get("saved_files", [])),
-                "missing_items": len(manifest.get("missing_items", [])),
-            }
-        )
+
+def display_results(run_dir: Path, key_prefix: str | None = None) -> None:
+    key_prefix = key_prefix or f"results_{widget_key_from_path(run_dir)}"
+    tables = load_result_tables(run_dir)
+    synthetic_df = tables["synthetic"]
+    annual_df = tables["annual"]
+    profile_df = tables["profile"]
+    dynamic_df = tables["dynamic"]
+    manifest = load_json(run_dir / "manifest.json") or {}
+
+    if all(df is None for df in tables.values()):
+        st.warning(f"No runtime outputs found in `{run_dir}`.")
+        return
+
+    st.subheader("Runtime summary")
+    col_a, col_b = st.columns(2)
+    col_a.metric("payload_type", manifest.get("payload_type", "-"))
+    col_b.metric("synthesis_mode", manifest.get("synthesis_mode", "-"))
+
+    total_annual, total_unit = metric_lookup(annual_df, "total_annual_heating_energy")
+    peak_heat, peak_unit = metric_lookup(dynamic_df, "peak_heat_demand")
+
+    st.subheader("Simulation summary")
+    metric_cols = st.columns(4)
+    with metric_cols[0]:
+        display_metric("Total annual heating energy", total_annual, total_unit)
+    with metric_cols[1]:
+        display_metric("Peak heat demand", peak_heat, peak_unit)
+    with metric_cols[2]:
+        display_metric("Input buildings", manifest.get("n_input_buildings"))
+    with metric_cols[3]:
+        display_metric("Synthetic buildings", manifest.get("n_generated_buildings"))
+
+    plot_typical_day_profile(profile_df, key_prefix)
+
+    st.subheader("Synthetic R, C, A, Qint")
+    if synthetic_df is None:
+        st.info("generated_building_parameters.csv not available.")
     else:
-        st.info("manifest.json not available.")
+        preferred = [
+            column
+            for column in ["building_id", "year", "Area", "EnergyLabel", "R", "C", "A", "Qint"]
+            if column in synthetic_df.columns
+        ]
+        st.dataframe(synthetic_df[preferred] if preferred else synthetic_df, use_container_width=True)
+
+    with st.expander("Advanced diagnostics", expanded=False):
+        proxy_value, proxy_unit = metric_lookup(annual_df, "typical_day_proxy_annual_heating_energy")
+        if proxy_value is not None:
+            display_metric("typical_day_proxy_annual_heating_energy", proxy_value, proxy_unit)
+        if annual_df is not None:
+            st.dataframe(annual_df, use_container_width=True)
+        if dynamic_df is not None:
+            st.dataframe(dynamic_df, use_container_width=True)
+
+    st.subheader("Downloads")
+    download_cols = st.columns(4)
+    filenames = {
+        "synthetic": "generated_building_parameters.csv",
+        "annual": "community_annual_energy_summary.csv",
+        "profile": "typical_day_community_profile.csv",
+        "dynamic": "community_dynamic_metrics.csv",
+    }
+    labels = {
+        "synthetic": "Synthetic thermal parameters",
+        "annual": "Annual summary",
+        "profile": "Typical-day profile",
+        "dynamic": "Dynamic metrics",
+    }
+    for column, key in zip(download_cols, ["synthetic", "annual", "profile", "dynamic"]):
+        with column:
+            df_download(tables[key], labels[key], filenames[key])
+
+
+logo_path = Path("logo.svg")
+if logo_path.exists():
+    st.image(str(logo_path), width=120)
+st.title("ComThermSyn")
+st.caption("A Community Thermal Parameter Synthesizer for Energy System Optimization")
+
+st.sidebar.header("ComThermSyn")
+st.sidebar.subheader("Runtime Status")
+artifact_root_input = str(DEFAULT_ARTIFACT_ROOT)
+output_root_input = str(DEFAULT_OUTPUT_ROOT)
+with st.sidebar.expander("Advanced settings", expanded=False):
+    artifact_root_input = st.text_input("Artifact root", artifact_root_input)
+    output_root_input = st.text_input("Output jobs folder", output_root_input)
+artifact_root = Path(artifact_root_input)
+output_root = Path(output_root_input)
+
+try:
+    artifacts = cached_artifacts(str(artifact_root))
+    input_schema = artifacts.get("input_schema") or DEFAULT_SCHEMA
+    st.sidebar.success("Artifact root detected")
+    st.sidebar.success("Public runtime ready")
+except Exception as exc:
+    artifacts = None
+    input_schema = DEFAULT_SCHEMA
+    st.sidebar.error("Artifact root missing or incomplete")
+    st.sidebar.warning("Public runtime not ready")
+    with st.sidebar.expander("Runtime error", expanded=False):
+        st.write(str(exc))
+st.sidebar.info(f"Output folder: `{output_root}`")
+
+tab_about, tab_submit, tab_load = st.tabs(["About", "Submit Case", "Load Results"])
+
+with tab_about:
+    st.subheader("ComThermSyn online demo")
+    st.write(
+        "ComThermSyn: A Community Thermal Parameter Synthesizer for Energy System Optimization "
+        "synthesizes public-demo thermal parameters and community heating profiles from simple "
+        "building/community inputs."
+    )
+    st.markdown(
+        """
+1. Submit a case with building or community inputs.
+2. Wait for the online runtime to synthesize thermal parameters and profiles.
+3. Load results using the same Run ID.
+4. Download synthetic thermal parameters and profiles if needed.
+        """
+    )
+    st.info(
+        "This demo uses public-safe deployment artifacts and does not require private raw data."
+    )
+
+with tab_submit:
+    st.subheader("Submit Case")
+    run_id_input = st.text_input("Run ID", value="CPN8_001")
+    overwrite = st.checkbox("overwrite existing run", value=False)
+
+    uploaded_csv = st.file_uploader("Upload community CSV", type=["csv"])
+    if uploaded_csv is not None:
+        try:
+            input_df = pd.read_csv(uploaded_csv)
+        except Exception as exc:
+            input_df = default_input_table(input_schema)
+            st.error(f"Could not read uploaded CSV: {exc}")
+    else:
+        input_df = default_input_table(input_schema)
+
+    columns = schema_columns(input_schema)
+    for column in columns:
+        if column not in input_df.columns:
+            input_df[column] = None
+    st.markdown("**Community input table**")
+    editor_df = st.data_editor(
+        input_df[columns],
+        num_rows="dynamic",
+        use_container_width=True,
+        key="community_input_editor",
+    )
+
+    run_dir: Path | None = None
+    try:
+        run_id = safe_run_id(run_id_input)
+        run_dir = output_root / run_id
+        if run_dir.exists():
+            st.warning(f"Run folder already exists: `{run_dir}`")
+    except ValueError as exc:
+        st.warning(str(exc))
+
+    if st.button("Submit and Run Synthesis", type="primary", disabled=artifacts is None):
+        try:
+            run_id = safe_run_id(run_id_input)
+            run_dir = output_root / run_id
+            if run_dir.exists() and not overwrite:
+                st.warning("Choose a new run_id or check overwrite existing run before submitting.")
+            else:
+                with st.spinner("Validating input and running public synthesis..."):
+                    validated_input = validate_community_input(
+                        editor_df,
+                        input_schema=input_schema,
+                    )
+                    input_path = run_dir / "inputs" / "community_input.csv"
+                    input_path.parent.mkdir(parents=True, exist_ok=True)
+                    validated_input.to_csv(input_path, index=False)
+
+                    result = run_deployment_synthesis(
+                        validated_input,
+                        artifacts=artifacts,
+                        runtime_config=artifacts.get("runtime_config"),
+                    )
+                    manifest = build_streamlit_output_package(result, run_dir)
+
+                st.success(f"Run complete: `{run_dir}`")
+                st.caption(
+                    f"payload_type={manifest.get('payload_type', '-')}, "
+                    f"synthesis_mode={manifest.get('synthesis_mode', '-')}"
+                )
+                display_results(run_dir, key_prefix="submitted_result")
+        except Exception as exc:
+            st.error(f"Run failed: {exc}")
+
+with tab_load:
+    st.subheader("Load Results")
+    load_run_id_input = st.text_input("Run ID to load", value="CPN8_001")
+    if st.button("Load Results"):
+        try:
+            load_run_id = safe_run_id(load_run_id_input)
+            loaded_run_dir = output_root / load_run_id
+            st.session_state["loaded_run_id"] = load_run_id
+            st.session_state["loaded_run_dir"] = loaded_run_dir
+        except ValueError as exc:
+            st.warning(str(exc))
+
+    if "loaded_run_dir" in st.session_state:
+        loaded_run_id = st.session_state.get("loaded_run_id", "")
+        loaded_run_dir = Path(st.session_state["loaded_run_dir"])
+        status_cols = st.columns([3, 1])
+        with status_cols[0]:
+            st.info(f"Loaded Run ID: `{loaded_run_id}`")
+        with status_cols[1]:
+            if st.button("Clear loaded result"):
+                st.session_state.pop("loaded_run_id", None)
+                st.session_state.pop("loaded_run_dir", None)
+                st.rerun()
+        display_results(loaded_run_dir, key_prefix="loaded_result")

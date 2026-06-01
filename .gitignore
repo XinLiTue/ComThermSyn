@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+*.pyc
+streamlit_demo_outputs/
+streamlit_demo_outputs_test/
+*.log
+.ipynb_checkpoints/
+.env
+.vscode/

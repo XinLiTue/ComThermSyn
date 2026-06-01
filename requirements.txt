@@ -1,3 +1,8 @@
 streamlit
 pandas
+numpy
 plotly
+pyarrow
+scikit-learn
+matplotlib
+openpyxl

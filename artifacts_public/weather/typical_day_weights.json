@@ -1,0 +1,8 @@
+{
+  "weights_are_probabilities": true,
+  "weights_by_day": {
+    "day_1": 0.45,
+    "day_2": 0.35,
+    "day_3": 0.2
+  }
+}

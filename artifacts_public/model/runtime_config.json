@@ -1,0 +1,9 @@
+{
+  "strategy": "public_sampler_v1",
+  "n_population_candidates": 24,
+  "top_k_proxy": 6,
+  "top_k_full": 2,
+  "proxy_simulation_mode": "typical_weather",
+  "max_buildings": 100,
+  "random_state": 42
+}

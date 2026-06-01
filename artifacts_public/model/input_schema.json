@@ -1,0 +1,30 @@
+{
+  "required_columns": [
+    "year",
+    "Area",
+    "EnergyLabel"
+  ],
+  "optional_columns": [
+    "building_id"
+  ],
+  "allowed_energy_labels": [
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F",
+    "G",
+    "unknown",
+    "0"
+  ],
+  "year_range": [
+    1900,
+    2025
+  ],
+  "area_range": [
+    20,
+    400
+  ],
+  "max_buildings": 100
+}

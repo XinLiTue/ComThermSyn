@@ -1,0 +1,12 @@
+{
+  "artifact_version": "public_sampler_v1_20260601",
+  "payload_type": "public_sampler_v1",
+  "mock_artifact": false,
+  "private_data_included": false,
+  "contains_user_ids": false,
+  "contains_truth_tables": false,
+  "min_public_group_count": 3,
+  "residual_samples_per_group": 256,
+  "n_internal_rows_used": 79,
+  "notes": "Public sampler artifact for online demo runtime."
+}
