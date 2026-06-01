@@ -25,6 +25,8 @@ st.set_page_config(
 
 DEFAULT_ARTIFACT_ROOT = Path("artifacts_public")
 DEFAULT_OUTPUT_ROOT = Path("streamlit_demo_outputs") / "jobs"
+INTRO_DIR = Path("Intro")
+INTRO_SLIDE_COUNT = 6
 DEFAULT_SCHEMA = {
     "required_columns": ["year", "Area", "EnergyLabel"],
     "optional_columns": ["building_id"],
@@ -109,6 +111,63 @@ def df_download(df: pd.DataFrame | None, label: str, filename: str) -> None:
         file_name=filename,
         mime="text/csv",
     )
+
+
+def intro_slide_paths() -> tuple[list[tuple[int, Path]], list[Path]]:
+    expected_paths = [(index, INTRO_DIR / f"{index}.png") for index in range(1, INTRO_SLIDE_COUNT + 1)]
+    available = [(index, path) for index, path in expected_paths if path.exists()]
+    missing = [path for _, path in expected_paths if not path.exists()]
+    return available, missing
+
+
+def display_intro_slideshow() -> None:
+    if not INTRO_DIR.exists():
+        st.info("Intro slideshow folder is not available.")
+        return
+
+    available, missing = intro_slide_paths()
+    if not available:
+        st.info("Intro slideshow images are not available.")
+        return
+
+    slide_numbers = [index for index, _ in available]
+    current_slide = st.session_state.get("intro_slide_number", slide_numbers[0])
+    if current_slide not in slide_numbers:
+        current_slide = slide_numbers[0]
+        st.session_state["intro_slide_number"] = current_slide
+
+    _, carousel, _ = st.columns([1, 2, 1])
+    with carousel:
+        controls = st.columns([1, 2, 1])
+        with controls[0]:
+            if st.button("Previous", disabled=current_slide == slide_numbers[0]):
+                current_position = slide_numbers.index(current_slide)
+                st.session_state["intro_slide_number"] = slide_numbers[current_position - 1]
+                st.rerun()
+        with controls[1]:
+            selected_slide = st.selectbox(
+                "Intro slide",
+                options=slide_numbers,
+                index=slide_numbers.index(current_slide),
+                format_func=lambda slide_number: f"Step {slide_number}",
+            )
+            st.session_state["intro_slide_number"] = selected_slide
+        with controls[2]:
+            if st.button("Next", disabled=current_slide == slide_numbers[-1]):
+                current_position = slide_numbers.index(current_slide)
+                st.session_state["intro_slide_number"] = slide_numbers[current_position + 1]
+                st.rerun()
+
+        selected_path = dict(available)[st.session_state["intro_slide_number"]]
+        st.image(
+            str(selected_path),
+            caption=f"Step {st.session_state['intro_slide_number']}",
+            use_container_width=True,
+        )
+
+    if missing:
+        missing_names = ", ".join(path.name for path in missing)
+        st.info(f"Some intro slides are missing: {missing_names}.")
 
 
 def metric_lookup(df: pd.DataFrame | None, metric: str) -> tuple[Any, str]:
@@ -391,9 +450,9 @@ def display_results(run_dir: Path, key_prefix: str | None = None) -> None:
             df_download(tables[key], labels[key], filenames[key])
 
 
-logo_path = Path("logo.svg")
+logo_path = Path("logo.svg") if Path("logo.svg").exists() else Path("logo.png")
 if logo_path.exists():
-    st.image(str(logo_path), width=120)
+    st.image(str(logo_path), width=165)
 st.title("ComThermSyn")
 st.caption("A Community Thermal Parameter Synthesizer for Energy System Optimization")
 
@@ -430,6 +489,9 @@ with tab_about:
         "synthesizes public-demo thermal parameters and community heating profiles from simple "
         "building/community inputs."
     )
+    st.subheader("What ComThermSyn helps with")
+    display_intro_slideshow()
+    st.subheader("How ComThermSyn works")
     st.markdown(
         """
 1. Submit a case with building or community inputs.
