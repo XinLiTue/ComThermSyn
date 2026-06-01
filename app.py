@@ -498,8 +498,8 @@ st.title("ComThermSyn")
 st.caption("A Community Thermal Parameter Synthesizer for Energy System Optimization")
 
 st.sidebar.header("ComThermSyn")
-st.sidebar.caption("Public demo runtime")
-st.sidebar.subheader("Runtime Status")
+st.sidebar.caption("Public demo")
+st.sidebar.subheader("Current Setup")
 artifact_root = DEFAULT_ARTIFACT_ROOT
 output_root = DEFAULT_OUTPUT_ROOT
 
@@ -514,23 +514,23 @@ try:
         or runtime_config.get("strategy")
         or "public_sampler_v1"
     )
-    st.sidebar.success("Artifact root detected")
-    st.sidebar.success("Public runtime ready")
-    st.sidebar.info(f"Runtime: `{runtime_label}`")
+    st.sidebar.success("Model files loaded")
+    st.sidebar.success("System ready")
+    st.sidebar.info(f"Model version\n\n`{runtime_label}`")
+    st.sidebar.info("Release version\n\n`v1.0 (2026-06)`")
     st.sidebar.info(
-        f"Artifact version: `{model_metadata.get('artifact_version', 'public demo')}`"
+        f"Supported community size\n\n`Up to {input_schema.get('max_buildings', '-')} buildings`"
     )
-    st.sidebar.info(f"Max buildings: `{input_schema.get('max_buildings', '-')}`")
 except Exception as exc:
     artifacts = None
     input_schema = DEFAULT_SCHEMA
-    st.sidebar.error("Artifact root missing or incomplete")
-    st.sidebar.warning("Public runtime not ready")
-    with st.sidebar.expander("Runtime error", expanded=False):
+    st.sidebar.error("Model files unavailable")
+    st.sidebar.warning("System not ready")
+    with st.sidebar.expander("Setup details", expanded=False):
         st.write(str(exc))
-st.sidebar.info(f"Output folder: `{output_root}`")
 st.sidebar.caption(
-    "Privacy note: public-safe artifacts only; no private training identifiers or truth tables."
+    "Designed for community-level energy system studies. "
+    "For academic research and demonstration purposes only."
 )
 
 tab_about, tab_submit, tab_load, tab_contact = st.tabs(
