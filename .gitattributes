@@ -1,0 +1,4 @@
+# Frozen deployment artifacts are protected by byte-level SHA-256 manifests.
+# Disable line-ending conversion so Windows and Linux checkouts keep identical bytes.
+artifacts_candidates/** -text
+artifacts_public/** -text
