@@ -555,12 +555,13 @@ tab_about, tab_submit, tab_load, tab_contact = st.tabs(
 )
 
 with tab_about:
-    st.subheader("SyCoTherm online demo")
-    st.write(
-        "SyCoTherm: A Community Thermal Parameter Synthesizer for Energy System Optimization "
-        # "synthesizes public-demo thermal parameters and community heating profiles from simple "
-        # "building/community inputs."
-    )
+    # st.subheader("SyCoTherm online demo")
+    st.subheader("SyCoTherm: A Community Thermal Parameter Synthesizer for Energy System Optimization")
+    # st.write(
+    #     "SyCoTherm: A Community Thermal Parameter Synthesizer for Energy System Optimization"
+    #     # "synthesizes public-demo thermal parameters and community heating profiles from simple "
+    #     # "building/community inputs."
+    # )
     st.subheader("What SyCoTherm helps with")
     # Previous intro slideshow kept for rollback.
     # display_intro_slideshow()
