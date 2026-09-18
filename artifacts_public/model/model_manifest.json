@@ -1,0 +1,66 @@
+{
+  "bundle_version": "task102b_copula_deploy_v1_20260830",
+  "contains_private_identifiers": false,
+  "contains_raw_dalen_rows": false,
+  "contains_validation_or_test_targets": false,
+  "files": [
+    {
+      "path": "model/model_metadata.json",
+      "sha256": "363c9c89b3a4b4837ee8228fd317d9a97a297e69ea25b3c48d0748bc651797fa"
+    },
+    {
+      "path": "model/runtime_config.json",
+      "sha256": "4f05448332416011e2ea9e7ff1d68847c1f71db8912a7fcf8796bdd411cd99d7"
+    },
+    {
+      "path": "model/input_schema.json",
+      "sha256": "23d9ed819eab322c9fc7586768953350abb8dadc260ea5f3ef7e4ab0025a108e"
+    },
+    {
+      "path": "model/parameter_draws.parquet",
+      "sha256": "85c20094aec6bc1aae690782051ea9669ca4d9d3f5fb7d7803dd69e96b960fdf"
+    },
+    {
+      "path": "model/residual_marginals.parquet",
+      "sha256": "aba4546021bc30715a06f1033672df6b33801e9fe1ab4630e0ccd380fc5b0993"
+    },
+    {
+      "path": "model/q_period_scales.parquet",
+      "sha256": "8518971b9cd6e522bfa3879d067f22b901cc697edae084ced831e73267db9343"
+    },
+    {
+      "path": "model/copula_correlation.json",
+      "sha256": "9d3b32ae1ad066c72c36c859e01484a7523956ca30ced0c04aaddd79128dadfc"
+    },
+    {
+      "path": "weather/typical_weather_scenarios.json",
+      "sha256": "6c9bd2e68db3f35f99b944727135bef6eba1ed98567b29dcb1f27790fb46e49a"
+    },
+    {
+      "path": "weather/typical_day_weights.json",
+      "sha256": "8616fcbe396f1730c889501991b9b508153a602bdac2bf69e54143037550024a"
+    }
+  ],
+  "source_hashes": [
+    {
+      "sha256": "ead5c43244b4a83aa7c1d56696069fbf0958d84d1c3487e30d28f413c88e643a",
+      "source": "analysis_outputs/community_rcaq_v1/task099_module5_v1/parameter_draw_audit.csv"
+    },
+    {
+      "sha256": "67199e89a20fe1f9a5c6fcc018e800fec6dd96ef8a03bd23e5eebafe8bdb32d9",
+      "source": "analysis_outputs/community_rcaq_v1/task099_module4_v1/innovation_residual_candidates.csv"
+    },
+    {
+      "sha256": "8c5f81c52cf681b6a812d564326b87d9fa6a615394666dd866fdb43141ab67e2",
+      "source": "analysis_outputs/community_rcaq_v1/task099_module5_v1/residual_scale_model.csv"
+    },
+    {
+      "sha256": "c2c1af22f21fcaee4b67beafe6f8bd6b87c1c83800a7cfba888953a40ced0855",
+      "source": "analysis_outputs/community_rcaq_v1/task099_module5_v1/copula_matrices.csv"
+    },
+    {
+      "sha256": "63e0770259a9cfdb187657405a671a4be59dfc72d26a95cec6fb16fe8f7db5ff",
+      "source": "analysis_outputs/community_rcaq_v1/task102b_product_freeze_v1/product_candidate_config.json"
+    }
+  ]
+}

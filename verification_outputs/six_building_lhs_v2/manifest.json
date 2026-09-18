@@ -1,0 +1,37 @@
+{
+  "acceptable_probability_designs": 3,
+  "acceptance_fallback_used": false,
+  "candidate_community_count": 3,
+  "energy_label_effect_used": false,
+  "files": [
+    "inputs/community_input_validated.csv",
+    "results/generated_building_parameters.csv",
+    "results/community_annual_energy_summary.csv",
+    "results/typical_day_community_profile.csv",
+    "results/community_dynamic_metrics.csv",
+    "results/candidate_community_summary.csv"
+  ],
+  "fully_evaluated_communities": 3,
+  "model_version": "task102b_copula_deploy_v1_20260830",
+  "n_generated_buildings": 6,
+  "n_input_buildings": 6,
+  "payload_type": "community_rcaq_typical_realization",
+  "planned_probability_designs": 16,
+  "run_seed": 20260830,
+  "sampling_mode": "lhs_fast",
+  "selected_community_id": "lhs_fast__c004__b004",
+  "selected_prescreen_score": 0.4277695345456991,
+  "selection_rule": "lhs_scale_stable_typicality_v2",
+  "support_counts": {
+    "adjacent": 3,
+    "core": 2,
+    "nearly_unsupported": 1
+  },
+  "synthesis_mode": "standalone_shrunk_copula_lhs_fast",
+  "warnings": [
+    "Development candidate only: no address-level, population, privacy, or measured-energy claim.",
+    "EnergyLabel is preserved in output but does not alter RCAQ in this frozen model.",
+    "Annual energy and peak values are typical-weather heating-demand proxies.",
+    "At least one 1992-2005 building uses nearly unsupported calibration evidence (n=1)."
+  ]
+}

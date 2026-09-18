@@ -1,0 +1,2042 @@
+{
+  "scenario_source": "documented_default",
+  "scenarios": [
+    {
+      "typical_day_id": "day_1",
+      "display_day_label": "Cold cloudy day",
+      "weight": 0.45,
+      "series": [
+        {
+          "timestep_index": 0,
+          "hour": 0.0,
+          "outdoor_temperature_C": -1.3978,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 1,
+          "hour": 0.25,
+          "outdoor_temperature_C": -1.4424,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 2,
+          "hour": 0.5,
+          "outdoor_temperature_C": -1.4743,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 3,
+          "hour": 0.75,
+          "outdoor_temperature_C": -1.4936,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 4,
+          "hour": 1.0,
+          "outdoor_temperature_C": -1.5,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 5,
+          "hour": 1.25,
+          "outdoor_temperature_C": -1.4936,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 6,
+          "hour": 1.5,
+          "outdoor_temperature_C": -1.4743,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 7,
+          "hour": 1.75,
+          "outdoor_temperature_C": -1.4424,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 8,
+          "hour": 2.0,
+          "outdoor_temperature_C": -1.3978,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 9,
+          "hour": 2.25,
+          "outdoor_temperature_C": -1.3408,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 10,
+          "hour": 2.5,
+          "outdoor_temperature_C": -1.2716,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 11,
+          "hour": 2.75,
+          "outdoor_temperature_C": -1.1906,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 12,
+          "hour": 3.0,
+          "outdoor_temperature_C": -1.0981,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 13,
+          "hour": 3.25,
+          "outdoor_temperature_C": -0.9944,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 14,
+          "hour": 3.5,
+          "outdoor_temperature_C": -0.8801,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 15,
+          "hour": 3.75,
+          "outdoor_temperature_C": -0.7555,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 16,
+          "hour": 4.0,
+          "outdoor_temperature_C": -0.6213,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 17,
+          "hour": 4.25,
+          "outdoor_temperature_C": -0.478,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 18,
+          "hour": 4.5,
+          "outdoor_temperature_C": -0.3263,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 19,
+          "hour": 4.75,
+          "outdoor_temperature_C": -0.1667,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 20,
+          "hour": 5.0,
+          "outdoor_temperature_C": 0.0,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 21,
+          "hour": 5.25,
+          "outdoor_temperature_C": 0.1731,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 22,
+          "hour": 5.5,
+          "outdoor_temperature_C": 0.3519,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 23,
+          "hour": 5.75,
+          "outdoor_temperature_C": 0.5357,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 24,
+          "hour": 6.0,
+          "outdoor_temperature_C": 0.7235,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 25,
+          "hour": 6.25,
+          "outdoor_temperature_C": 0.9147,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 26,
+          "hour": 6.5,
+          "outdoor_temperature_C": 1.1084,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 27,
+          "hour": 6.75,
+          "outdoor_temperature_C": 1.3038,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 28,
+          "hour": 7.0,
+          "outdoor_temperature_C": 1.5,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 29,
+          "hour": 7.25,
+          "outdoor_temperature_C": 1.6962,
+          "solar_radiation_W_m2": 4.5782,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 30,
+          "hour": 7.5,
+          "outdoor_temperature_C": 1.8916,
+          "solar_radiation_W_m2": 9.1368,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 31,
+          "hour": 7.75,
+          "outdoor_temperature_C": 2.0853,
+          "solar_radiation_W_m2": 13.6563,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 32,
+          "hour": 8.0,
+          "outdoor_temperature_C": 2.2765,
+          "solar_radiation_W_m2": 18.1173,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 33,
+          "hour": 8.25,
+          "outdoor_temperature_C": 2.4643,
+          "solar_radiation_W_m2": 22.5008,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 34,
+          "hour": 8.5,
+          "outdoor_temperature_C": 2.6481,
+          "solar_radiation_W_m2": 26.7878,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 35,
+          "hour": 8.75,
+          "outdoor_temperature_C": 2.8269,
+          "solar_radiation_W_m2": 30.9602,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 36,
+          "hour": 9.0,
+          "outdoor_temperature_C": 3.0,
+          "solar_radiation_W_m2": 35.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 37,
+          "hour": 9.25,
+          "outdoor_temperature_C": 3.1667,
+          "solar_radiation_W_m2": 38.8899,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 38,
+          "hour": 9.5,
+          "outdoor_temperature_C": 3.3263,
+          "solar_radiation_W_m2": 42.6133,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 39,
+          "hour": 9.75,
+          "outdoor_temperature_C": 3.478,
+          "solar_radiation_W_m2": 46.1542,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 40,
+          "hour": 10.0,
+          "outdoor_temperature_C": 3.6213,
+          "solar_radiation_W_m2": 49.4975,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 41,
+          "hour": 10.25,
+          "outdoor_temperature_C": 3.7555,
+          "solar_radiation_W_m2": 52.6288,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 42,
+          "hour": 10.5,
+          "outdoor_temperature_C": 3.8801,
+          "solar_radiation_W_m2": 55.5347,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 43,
+          "hour": 10.75,
+          "outdoor_temperature_C": 3.9944,
+          "solar_radiation_W_m2": 58.2029,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 44,
+          "hour": 11.0,
+          "outdoor_temperature_C": 4.0981,
+          "solar_radiation_W_m2": 60.6218,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 45,
+          "hour": 11.25,
+          "outdoor_temperature_C": 4.1906,
+          "solar_radiation_W_m2": 62.7811,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 46,
+          "hour": 11.5,
+          "outdoor_temperature_C": 4.2716,
+          "solar_radiation_W_m2": 64.6716,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 47,
+          "hour": 11.75,
+          "outdoor_temperature_C": 4.3408,
+          "solar_radiation_W_m2": 66.2851,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 48,
+          "hour": 12.0,
+          "outdoor_temperature_C": 4.3978,
+          "solar_radiation_W_m2": 67.6148,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 49,
+          "hour": 12.25,
+          "outdoor_temperature_C": 4.4424,
+          "solar_radiation_W_m2": 68.655,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 50,
+          "hour": 12.5,
+          "outdoor_temperature_C": 4.4743,
+          "solar_radiation_W_m2": 69.4011,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 51,
+          "hour": 12.75,
+          "outdoor_temperature_C": 4.4936,
+          "solar_radiation_W_m2": 69.8501,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 52,
+          "hour": 13.0,
+          "outdoor_temperature_C": 4.5,
+          "solar_radiation_W_m2": 70.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 53,
+          "hour": 13.25,
+          "outdoor_temperature_C": 4.4936,
+          "solar_radiation_W_m2": 69.8501,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 54,
+          "hour": 13.5,
+          "outdoor_temperature_C": 4.4743,
+          "solar_radiation_W_m2": 69.4011,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 55,
+          "hour": 13.75,
+          "outdoor_temperature_C": 4.4424,
+          "solar_radiation_W_m2": 68.655,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 56,
+          "hour": 14.0,
+          "outdoor_temperature_C": 4.3978,
+          "solar_radiation_W_m2": 67.6148,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 57,
+          "hour": 14.25,
+          "outdoor_temperature_C": 4.3408,
+          "solar_radiation_W_m2": 66.2851,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 58,
+          "hour": 14.5,
+          "outdoor_temperature_C": 4.2716,
+          "solar_radiation_W_m2": 64.6716,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 59,
+          "hour": 14.75,
+          "outdoor_temperature_C": 4.1906,
+          "solar_radiation_W_m2": 62.7811,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 60,
+          "hour": 15.0,
+          "outdoor_temperature_C": 4.0981,
+          "solar_radiation_W_m2": 60.6218,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 61,
+          "hour": 15.25,
+          "outdoor_temperature_C": 3.9944,
+          "solar_radiation_W_m2": 58.2029,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 62,
+          "hour": 15.5,
+          "outdoor_temperature_C": 3.8801,
+          "solar_radiation_W_m2": 55.5347,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 63,
+          "hour": 15.75,
+          "outdoor_temperature_C": 3.7555,
+          "solar_radiation_W_m2": 52.6288,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 64,
+          "hour": 16.0,
+          "outdoor_temperature_C": 3.6213,
+          "solar_radiation_W_m2": 49.4975,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 65,
+          "hour": 16.25,
+          "outdoor_temperature_C": 3.478,
+          "solar_radiation_W_m2": 46.1542,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 66,
+          "hour": 16.5,
+          "outdoor_temperature_C": 3.3263,
+          "solar_radiation_W_m2": 42.6133,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 67,
+          "hour": 16.75,
+          "outdoor_temperature_C": 3.1667,
+          "solar_radiation_W_m2": 38.8899,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 68,
+          "hour": 17.0,
+          "outdoor_temperature_C": 3.0,
+          "solar_radiation_W_m2": 35.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 69,
+          "hour": 17.25,
+          "outdoor_temperature_C": 2.8269,
+          "solar_radiation_W_m2": 30.9602,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 70,
+          "hour": 17.5,
+          "outdoor_temperature_C": 2.6481,
+          "solar_radiation_W_m2": 26.7878,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 71,
+          "hour": 17.75,
+          "outdoor_temperature_C": 2.4643,
+          "solar_radiation_W_m2": 22.5008,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 72,
+          "hour": 18.0,
+          "outdoor_temperature_C": 2.2765,
+          "solar_radiation_W_m2": 18.1173,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 73,
+          "hour": 18.25,
+          "outdoor_temperature_C": 2.0853,
+          "solar_radiation_W_m2": 13.6563,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 74,
+          "hour": 18.5,
+          "outdoor_temperature_C": 1.8916,
+          "solar_radiation_W_m2": 9.1368,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 75,
+          "hour": 18.75,
+          "outdoor_temperature_C": 1.6962,
+          "solar_radiation_W_m2": 4.5782,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 76,
+          "hour": 19.0,
+          "outdoor_temperature_C": 1.5,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 77,
+          "hour": 19.25,
+          "outdoor_temperature_C": 1.3038,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 78,
+          "hour": 19.5,
+          "outdoor_temperature_C": 1.1084,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 79,
+          "hour": 19.75,
+          "outdoor_temperature_C": 0.9147,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 80,
+          "hour": 20.0,
+          "outdoor_temperature_C": 0.7235,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 81,
+          "hour": 20.25,
+          "outdoor_temperature_C": 0.5357,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 82,
+          "hour": 20.5,
+          "outdoor_temperature_C": 0.3519,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 83,
+          "hour": 20.75,
+          "outdoor_temperature_C": 0.1731,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 84,
+          "hour": 21.0,
+          "outdoor_temperature_C": -0.0,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 85,
+          "hour": 21.25,
+          "outdoor_temperature_C": -0.1667,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 86,
+          "hour": 21.5,
+          "outdoor_temperature_C": -0.3263,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 87,
+          "hour": 21.75,
+          "outdoor_temperature_C": -0.478,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 88,
+          "hour": 22.0,
+          "outdoor_temperature_C": -0.6213,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 89,
+          "hour": 22.25,
+          "outdoor_temperature_C": -0.7555,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 90,
+          "hour": 22.5,
+          "outdoor_temperature_C": -0.8801,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 91,
+          "hour": 22.75,
+          "outdoor_temperature_C": -0.9944,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 92,
+          "hour": 23.0,
+          "outdoor_temperature_C": -1.0981,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 93,
+          "hour": 23.25,
+          "outdoor_temperature_C": -1.1906,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 94,
+          "hour": 23.5,
+          "outdoor_temperature_C": -1.2716,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 95,
+          "hour": 23.75,
+          "outdoor_temperature_C": -1.3408,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        }
+      ]
+    },
+    {
+      "typical_day_id": "day_2",
+      "display_day_label": "Mild cloudy day",
+      "weight": 0.35,
+      "series": [
+        {
+          "timestep_index": 0,
+          "hour": 0.0,
+          "outdoor_temperature_C": 5.6022,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 1,
+          "hour": 0.25,
+          "outdoor_temperature_C": 5.5576,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 2,
+          "hour": 0.5,
+          "outdoor_temperature_C": 5.5257,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 3,
+          "hour": 0.75,
+          "outdoor_temperature_C": 5.5064,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 4,
+          "hour": 1.0,
+          "outdoor_temperature_C": 5.5,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 5,
+          "hour": 1.25,
+          "outdoor_temperature_C": 5.5064,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 6,
+          "hour": 1.5,
+          "outdoor_temperature_C": 5.5257,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 7,
+          "hour": 1.75,
+          "outdoor_temperature_C": 5.5576,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 8,
+          "hour": 2.0,
+          "outdoor_temperature_C": 5.6022,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 9,
+          "hour": 2.25,
+          "outdoor_temperature_C": 5.6592,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 10,
+          "hour": 2.5,
+          "outdoor_temperature_C": 5.7284,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 11,
+          "hour": 2.75,
+          "outdoor_temperature_C": 5.8094,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 12,
+          "hour": 3.0,
+          "outdoor_temperature_C": 5.9019,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 13,
+          "hour": 3.25,
+          "outdoor_temperature_C": 6.0056,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 14,
+          "hour": 3.5,
+          "outdoor_temperature_C": 6.1199,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 15,
+          "hour": 3.75,
+          "outdoor_temperature_C": 6.2445,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 16,
+          "hour": 4.0,
+          "outdoor_temperature_C": 6.3787,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 17,
+          "hour": 4.25,
+          "outdoor_temperature_C": 6.522,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 18,
+          "hour": 4.5,
+          "outdoor_temperature_C": 6.6737,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 19,
+          "hour": 4.75,
+          "outdoor_temperature_C": 6.8333,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 20,
+          "hour": 5.0,
+          "outdoor_temperature_C": 7.0,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 21,
+          "hour": 5.25,
+          "outdoor_temperature_C": 7.1731,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 22,
+          "hour": 5.5,
+          "outdoor_temperature_C": 7.3519,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 23,
+          "hour": 5.75,
+          "outdoor_temperature_C": 7.5357,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 24,
+          "hour": 6.0,
+          "outdoor_temperature_C": 7.7235,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 25,
+          "hour": 6.25,
+          "outdoor_temperature_C": 7.9147,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 26,
+          "hour": 6.5,
+          "outdoor_temperature_C": 8.1084,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 27,
+          "hour": 6.75,
+          "outdoor_temperature_C": 8.3038,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 28,
+          "hour": 7.0,
+          "outdoor_temperature_C": 8.5,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 29,
+          "hour": 7.25,
+          "outdoor_temperature_C": 8.6962,
+          "solar_radiation_W_m2": 4.5782,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 30,
+          "hour": 7.5,
+          "outdoor_temperature_C": 8.8916,
+          "solar_radiation_W_m2": 9.1368,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 31,
+          "hour": 7.75,
+          "outdoor_temperature_C": 9.0853,
+          "solar_radiation_W_m2": 13.6563,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 32,
+          "hour": 8.0,
+          "outdoor_temperature_C": 9.2765,
+          "solar_radiation_W_m2": 18.1173,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 33,
+          "hour": 8.25,
+          "outdoor_temperature_C": 9.4643,
+          "solar_radiation_W_m2": 22.5008,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 34,
+          "hour": 8.5,
+          "outdoor_temperature_C": 9.6481,
+          "solar_radiation_W_m2": 26.7878,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 35,
+          "hour": 8.75,
+          "outdoor_temperature_C": 9.8269,
+          "solar_radiation_W_m2": 30.9602,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 36,
+          "hour": 9.0,
+          "outdoor_temperature_C": 10.0,
+          "solar_radiation_W_m2": 35.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 37,
+          "hour": 9.25,
+          "outdoor_temperature_C": 10.1667,
+          "solar_radiation_W_m2": 38.8899,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 38,
+          "hour": 9.5,
+          "outdoor_temperature_C": 10.3263,
+          "solar_radiation_W_m2": 42.6133,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 39,
+          "hour": 9.75,
+          "outdoor_temperature_C": 10.478,
+          "solar_radiation_W_m2": 46.1542,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 40,
+          "hour": 10.0,
+          "outdoor_temperature_C": 10.6213,
+          "solar_radiation_W_m2": 49.4975,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 41,
+          "hour": 10.25,
+          "outdoor_temperature_C": 10.7555,
+          "solar_radiation_W_m2": 52.6288,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 42,
+          "hour": 10.5,
+          "outdoor_temperature_C": 10.8801,
+          "solar_radiation_W_m2": 55.5347,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 43,
+          "hour": 10.75,
+          "outdoor_temperature_C": 10.9944,
+          "solar_radiation_W_m2": 58.2029,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 44,
+          "hour": 11.0,
+          "outdoor_temperature_C": 11.0981,
+          "solar_radiation_W_m2": 60.6218,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 45,
+          "hour": 11.25,
+          "outdoor_temperature_C": 11.1906,
+          "solar_radiation_W_m2": 62.7811,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 46,
+          "hour": 11.5,
+          "outdoor_temperature_C": 11.2716,
+          "solar_radiation_W_m2": 64.6716,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 47,
+          "hour": 11.75,
+          "outdoor_temperature_C": 11.3408,
+          "solar_radiation_W_m2": 66.2851,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 48,
+          "hour": 12.0,
+          "outdoor_temperature_C": 11.3978,
+          "solar_radiation_W_m2": 67.6148,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 49,
+          "hour": 12.25,
+          "outdoor_temperature_C": 11.4424,
+          "solar_radiation_W_m2": 68.655,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 50,
+          "hour": 12.5,
+          "outdoor_temperature_C": 11.4743,
+          "solar_radiation_W_m2": 69.4011,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 51,
+          "hour": 12.75,
+          "outdoor_temperature_C": 11.4936,
+          "solar_radiation_W_m2": 69.8501,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 52,
+          "hour": 13.0,
+          "outdoor_temperature_C": 11.5,
+          "solar_radiation_W_m2": 70.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 53,
+          "hour": 13.25,
+          "outdoor_temperature_C": 11.4936,
+          "solar_radiation_W_m2": 69.8501,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 54,
+          "hour": 13.5,
+          "outdoor_temperature_C": 11.4743,
+          "solar_radiation_W_m2": 69.4011,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 55,
+          "hour": 13.75,
+          "outdoor_temperature_C": 11.4424,
+          "solar_radiation_W_m2": 68.655,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 56,
+          "hour": 14.0,
+          "outdoor_temperature_C": 11.3978,
+          "solar_radiation_W_m2": 67.6148,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 57,
+          "hour": 14.25,
+          "outdoor_temperature_C": 11.3408,
+          "solar_radiation_W_m2": 66.2851,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 58,
+          "hour": 14.5,
+          "outdoor_temperature_C": 11.2716,
+          "solar_radiation_W_m2": 64.6716,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 59,
+          "hour": 14.75,
+          "outdoor_temperature_C": 11.1906,
+          "solar_radiation_W_m2": 62.7811,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 60,
+          "hour": 15.0,
+          "outdoor_temperature_C": 11.0981,
+          "solar_radiation_W_m2": 60.6218,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 61,
+          "hour": 15.25,
+          "outdoor_temperature_C": 10.9944,
+          "solar_radiation_W_m2": 58.2029,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 62,
+          "hour": 15.5,
+          "outdoor_temperature_C": 10.8801,
+          "solar_radiation_W_m2": 55.5347,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 63,
+          "hour": 15.75,
+          "outdoor_temperature_C": 10.7555,
+          "solar_radiation_W_m2": 52.6288,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 64,
+          "hour": 16.0,
+          "outdoor_temperature_C": 10.6213,
+          "solar_radiation_W_m2": 49.4975,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 65,
+          "hour": 16.25,
+          "outdoor_temperature_C": 10.478,
+          "solar_radiation_W_m2": 46.1542,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 66,
+          "hour": 16.5,
+          "outdoor_temperature_C": 10.3263,
+          "solar_radiation_W_m2": 42.6133,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 67,
+          "hour": 16.75,
+          "outdoor_temperature_C": 10.1667,
+          "solar_radiation_W_m2": 38.8899,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 68,
+          "hour": 17.0,
+          "outdoor_temperature_C": 10.0,
+          "solar_radiation_W_m2": 35.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 69,
+          "hour": 17.25,
+          "outdoor_temperature_C": 9.8269,
+          "solar_radiation_W_m2": 30.9602,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 70,
+          "hour": 17.5,
+          "outdoor_temperature_C": 9.6481,
+          "solar_radiation_W_m2": 26.7878,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 71,
+          "hour": 17.75,
+          "outdoor_temperature_C": 9.4643,
+          "solar_radiation_W_m2": 22.5008,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 72,
+          "hour": 18.0,
+          "outdoor_temperature_C": 9.2765,
+          "solar_radiation_W_m2": 18.1173,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 73,
+          "hour": 18.25,
+          "outdoor_temperature_C": 9.0853,
+          "solar_radiation_W_m2": 13.6563,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 74,
+          "hour": 18.5,
+          "outdoor_temperature_C": 8.8916,
+          "solar_radiation_W_m2": 9.1368,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 75,
+          "hour": 18.75,
+          "outdoor_temperature_C": 8.6962,
+          "solar_radiation_W_m2": 4.5782,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 76,
+          "hour": 19.0,
+          "outdoor_temperature_C": 8.5,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 77,
+          "hour": 19.25,
+          "outdoor_temperature_C": 8.3038,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 78,
+          "hour": 19.5,
+          "outdoor_temperature_C": 8.1084,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 79,
+          "hour": 19.75,
+          "outdoor_temperature_C": 7.9147,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 80,
+          "hour": 20.0,
+          "outdoor_temperature_C": 7.7235,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 81,
+          "hour": 20.25,
+          "outdoor_temperature_C": 7.5357,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 82,
+          "hour": 20.5,
+          "outdoor_temperature_C": 7.3519,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 83,
+          "hour": 20.75,
+          "outdoor_temperature_C": 7.1731,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 84,
+          "hour": 21.0,
+          "outdoor_temperature_C": 7.0,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 85,
+          "hour": 21.25,
+          "outdoor_temperature_C": 6.8333,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 86,
+          "hour": 21.5,
+          "outdoor_temperature_C": 6.6737,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 87,
+          "hour": 21.75,
+          "outdoor_temperature_C": 6.522,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 88,
+          "hour": 22.0,
+          "outdoor_temperature_C": 6.3787,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 89,
+          "hour": 22.25,
+          "outdoor_temperature_C": 6.2445,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 90,
+          "hour": 22.5,
+          "outdoor_temperature_C": 6.1199,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 91,
+          "hour": 22.75,
+          "outdoor_temperature_C": 6.0056,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 92,
+          "hour": 23.0,
+          "outdoor_temperature_C": 5.9019,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 93,
+          "hour": 23.25,
+          "outdoor_temperature_C": 5.8094,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 94,
+          "hour": 23.5,
+          "outdoor_temperature_C": 5.7284,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 95,
+          "hour": 23.75,
+          "outdoor_temperature_C": 5.6592,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        }
+      ]
+    },
+    {
+      "typical_day_id": "day_3",
+      "display_day_label": "Mild sunny day",
+      "weight": 0.2,
+      "series": [
+        {
+          "timestep_index": 0,
+          "hour": 0.0,
+          "outdoor_temperature_C": 5.6022,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 1,
+          "hour": 0.25,
+          "outdoor_temperature_C": 5.5576,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 2,
+          "hour": 0.5,
+          "outdoor_temperature_C": 5.5257,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 3,
+          "hour": 0.75,
+          "outdoor_temperature_C": 5.5064,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 4,
+          "hour": 1.0,
+          "outdoor_temperature_C": 5.5,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 5,
+          "hour": 1.25,
+          "outdoor_temperature_C": 5.5064,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 6,
+          "hour": 1.5,
+          "outdoor_temperature_C": 5.5257,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 7,
+          "hour": 1.75,
+          "outdoor_temperature_C": 5.5576,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 8,
+          "hour": 2.0,
+          "outdoor_temperature_C": 5.6022,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 9,
+          "hour": 2.25,
+          "outdoor_temperature_C": 5.6592,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 10,
+          "hour": 2.5,
+          "outdoor_temperature_C": 5.7284,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 11,
+          "hour": 2.75,
+          "outdoor_temperature_C": 5.8094,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 12,
+          "hour": 3.0,
+          "outdoor_temperature_C": 5.9019,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 13,
+          "hour": 3.25,
+          "outdoor_temperature_C": 6.0056,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 14,
+          "hour": 3.5,
+          "outdoor_temperature_C": 6.1199,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 15,
+          "hour": 3.75,
+          "outdoor_temperature_C": 6.2445,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 16,
+          "hour": 4.0,
+          "outdoor_temperature_C": 6.3787,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 17,
+          "hour": 4.25,
+          "outdoor_temperature_C": 6.522,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 18,
+          "hour": 4.5,
+          "outdoor_temperature_C": 6.6737,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 19,
+          "hour": 4.75,
+          "outdoor_temperature_C": 6.8333,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 20,
+          "hour": 5.0,
+          "outdoor_temperature_C": 7.0,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 21,
+          "hour": 5.25,
+          "outdoor_temperature_C": 7.1731,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 22,
+          "hour": 5.5,
+          "outdoor_temperature_C": 7.3519,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 23,
+          "hour": 5.75,
+          "outdoor_temperature_C": 7.5357,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 24,
+          "hour": 6.0,
+          "outdoor_temperature_C": 7.7235,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 25,
+          "hour": 6.25,
+          "outdoor_temperature_C": 7.9147,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 26,
+          "hour": 6.5,
+          "outdoor_temperature_C": 8.1084,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 27,
+          "hour": 6.75,
+          "outdoor_temperature_C": 8.3038,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 28,
+          "hour": 7.0,
+          "outdoor_temperature_C": 8.5,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 29,
+          "hour": 7.25,
+          "outdoor_temperature_C": 8.6962,
+          "solar_radiation_W_m2": 17.0048,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 30,
+          "hour": 7.5,
+          "outdoor_temperature_C": 8.8916,
+          "solar_radiation_W_m2": 33.9368,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 31,
+          "hour": 7.75,
+          "outdoor_temperature_C": 9.0853,
+          "solar_radiation_W_m2": 50.7235,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 32,
+          "hour": 8.0,
+          "outdoor_temperature_C": 9.2765,
+          "solar_radiation_W_m2": 67.293,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 33,
+          "hour": 8.25,
+          "outdoor_temperature_C": 9.4643,
+          "solar_radiation_W_m2": 83.5743,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 34,
+          "hour": 8.5,
+          "outdoor_temperature_C": 9.6481,
+          "solar_radiation_W_m2": 99.4977,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 35,
+          "hour": 8.75,
+          "outdoor_temperature_C": 9.8269,
+          "solar_radiation_W_m2": 114.9951,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 36,
+          "hour": 9.0,
+          "outdoor_temperature_C": 10.0,
+          "solar_radiation_W_m2": 130.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 37,
+          "hour": 9.25,
+          "outdoor_temperature_C": 10.1667,
+          "solar_radiation_W_m2": 144.4483,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 38,
+          "hour": 9.5,
+          "outdoor_temperature_C": 10.3263,
+          "solar_radiation_W_m2": 158.278,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 39,
+          "hour": 9.75,
+          "outdoor_temperature_C": 10.478,
+          "solar_radiation_W_m2": 171.4299,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 40,
+          "hour": 10.0,
+          "outdoor_temperature_C": 10.6213,
+          "solar_radiation_W_m2": 183.8478,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 41,
+          "hour": 10.25,
+          "outdoor_temperature_C": 10.7555,
+          "solar_radiation_W_m2": 195.4783,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 42,
+          "hour": 10.5,
+          "outdoor_temperature_C": 10.8801,
+          "solar_radiation_W_m2": 206.2719,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 43,
+          "hour": 10.75,
+          "outdoor_temperature_C": 10.9944,
+          "solar_radiation_W_m2": 216.1821,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 44,
+          "hour": 11.0,
+          "outdoor_temperature_C": 11.0981,
+          "solar_radiation_W_m2": 225.1666,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 45,
+          "hour": 11.25,
+          "outdoor_temperature_C": 11.1906,
+          "solar_radiation_W_m2": 233.1869,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 46,
+          "hour": 11.5,
+          "outdoor_temperature_C": 11.2716,
+          "solar_radiation_W_m2": 240.2087,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 47,
+          "hour": 11.75,
+          "outdoor_temperature_C": 11.3408,
+          "solar_radiation_W_m2": 246.2018,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 48,
+          "hour": 12.0,
+          "outdoor_temperature_C": 11.3978,
+          "solar_radiation_W_m2": 251.1407,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 49,
+          "hour": 12.25,
+          "outdoor_temperature_C": 11.4424,
+          "solar_radiation_W_m2": 255.0042,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 50,
+          "hour": 12.5,
+          "outdoor_temperature_C": 11.4743,
+          "solar_radiation_W_m2": 257.7757,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 51,
+          "hour": 12.75,
+          "outdoor_temperature_C": 11.4936,
+          "solar_radiation_W_m2": 259.4433,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 52,
+          "hour": 13.0,
+          "outdoor_temperature_C": 11.5,
+          "solar_radiation_W_m2": 260.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 53,
+          "hour": 13.25,
+          "outdoor_temperature_C": 11.4936,
+          "solar_radiation_W_m2": 259.4433,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 54,
+          "hour": 13.5,
+          "outdoor_temperature_C": 11.4743,
+          "solar_radiation_W_m2": 257.7757,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 55,
+          "hour": 13.75,
+          "outdoor_temperature_C": 11.4424,
+          "solar_radiation_W_m2": 255.0042,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 56,
+          "hour": 14.0,
+          "outdoor_temperature_C": 11.3978,
+          "solar_radiation_W_m2": 251.1407,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 57,
+          "hour": 14.25,
+          "outdoor_temperature_C": 11.3408,
+          "solar_radiation_W_m2": 246.2018,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 58,
+          "hour": 14.5,
+          "outdoor_temperature_C": 11.2716,
+          "solar_radiation_W_m2": 240.2087,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 59,
+          "hour": 14.75,
+          "outdoor_temperature_C": 11.1906,
+          "solar_radiation_W_m2": 233.1869,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 60,
+          "hour": 15.0,
+          "outdoor_temperature_C": 11.0981,
+          "solar_radiation_W_m2": 225.1666,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 61,
+          "hour": 15.25,
+          "outdoor_temperature_C": 10.9944,
+          "solar_radiation_W_m2": 216.1821,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 62,
+          "hour": 15.5,
+          "outdoor_temperature_C": 10.8801,
+          "solar_radiation_W_m2": 206.2719,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 63,
+          "hour": 15.75,
+          "outdoor_temperature_C": 10.7555,
+          "solar_radiation_W_m2": 195.4783,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 64,
+          "hour": 16.0,
+          "outdoor_temperature_C": 10.6213,
+          "solar_radiation_W_m2": 183.8478,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 65,
+          "hour": 16.25,
+          "outdoor_temperature_C": 10.478,
+          "solar_radiation_W_m2": 171.4299,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 66,
+          "hour": 16.5,
+          "outdoor_temperature_C": 10.3263,
+          "solar_radiation_W_m2": 158.278,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 67,
+          "hour": 16.75,
+          "outdoor_temperature_C": 10.1667,
+          "solar_radiation_W_m2": 144.4483,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 68,
+          "hour": 17.0,
+          "outdoor_temperature_C": 10.0,
+          "solar_radiation_W_m2": 130.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 69,
+          "hour": 17.25,
+          "outdoor_temperature_C": 9.8269,
+          "solar_radiation_W_m2": 114.9951,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 70,
+          "hour": 17.5,
+          "outdoor_temperature_C": 9.6481,
+          "solar_radiation_W_m2": 99.4977,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 71,
+          "hour": 17.75,
+          "outdoor_temperature_C": 9.4643,
+          "solar_radiation_W_m2": 83.5743,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 72,
+          "hour": 18.0,
+          "outdoor_temperature_C": 9.2765,
+          "solar_radiation_W_m2": 67.293,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 73,
+          "hour": 18.25,
+          "outdoor_temperature_C": 9.0853,
+          "solar_radiation_W_m2": 50.7235,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 74,
+          "hour": 18.5,
+          "outdoor_temperature_C": 8.8916,
+          "solar_radiation_W_m2": 33.9368,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 75,
+          "hour": 18.75,
+          "outdoor_temperature_C": 8.6962,
+          "solar_radiation_W_m2": 17.0048,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 76,
+          "hour": 19.0,
+          "outdoor_temperature_C": 8.5,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 77,
+          "hour": 19.25,
+          "outdoor_temperature_C": 8.3038,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 78,
+          "hour": 19.5,
+          "outdoor_temperature_C": 8.1084,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 79,
+          "hour": 19.75,
+          "outdoor_temperature_C": 7.9147,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 80,
+          "hour": 20.0,
+          "outdoor_temperature_C": 7.7235,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 81,
+          "hour": 20.25,
+          "outdoor_temperature_C": 7.5357,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 82,
+          "hour": 20.5,
+          "outdoor_temperature_C": 7.3519,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 83,
+          "hour": 20.75,
+          "outdoor_temperature_C": 7.1731,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 84,
+          "hour": 21.0,
+          "outdoor_temperature_C": 7.0,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 85,
+          "hour": 21.25,
+          "outdoor_temperature_C": 6.8333,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 86,
+          "hour": 21.5,
+          "outdoor_temperature_C": 6.6737,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 87,
+          "hour": 21.75,
+          "outdoor_temperature_C": 6.522,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 88,
+          "hour": 22.0,
+          "outdoor_temperature_C": 6.3787,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 89,
+          "hour": 22.25,
+          "outdoor_temperature_C": 6.2445,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 90,
+          "hour": 22.5,
+          "outdoor_temperature_C": 6.1199,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 91,
+          "hour": 22.75,
+          "outdoor_temperature_C": 6.0056,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 92,
+          "hour": 23.0,
+          "outdoor_temperature_C": 5.9019,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 93,
+          "hour": 23.25,
+          "outdoor_temperature_C": 5.8094,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 94,
+          "hour": 23.5,
+          "outdoor_temperature_C": 5.7284,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        },
+        {
+          "timestep_index": 95,
+          "hour": 23.75,
+          "outdoor_temperature_C": 5.6592,
+          "solar_radiation_W_m2": 0.0,
+          "setpoint_C": 20.0
+        }
+      ]
+    }
+  ]
+}

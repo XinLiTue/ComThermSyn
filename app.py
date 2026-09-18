@@ -19,19 +19,20 @@ from src.deploy_runtime import (
 
 
 st.set_page_config(
-    page_title="ComThermSyn",
+    page_title="SyCoTherm",
     layout="wide",
 )
 
 
-DEFAULT_ARTIFACT_ROOT = Path("artifacts_public")
-DEFAULT_OUTPUT_ROOT = Path("streamlit_demo_outputs") / "jobs"
-INTRO_DIR = Path("Intro")
+BASE_DIR = Path(__file__).resolve().parent
+DEFAULT_ARTIFACT_ROOT = BASE_DIR / "artifacts_candidates" / "task107_dual_e4_v1"
+DEFAULT_OUTPUT_ROOT = BASE_DIR / "streamlit_demo_outputs" / "jobs"
+INTRO_DIR = BASE_DIR / "Intro"
 INTRO_SLIDE_COUNT = 6
 INTRO_SCENES = {
     1: "Scene 1 - Modeling challenge",
     2: "Scene 2 - Data confusion",
-    3: "Scene 3 - ComThermSyn processing",
+    3: "Scene 3 - SyCoTherm processing",
     4: "Scene 4 - Parameter synthesis",
     5: "Scene 5 - Profile generation",
     6: "Scene 6 - Energy-system insights",
@@ -40,8 +41,8 @@ DEFAULT_SCHEMA = {
     "required_columns": ["year", "Area", "EnergyLabel"],
     "optional_columns": ["building_id"],
     "allowed_energy_labels": ["A", "B", "C", "D", "E", "F", "G", "unknown", "0"],
-    "year_range": [1900, 2025],
-    "area_range": [20, 400],
+    "year_range": [1946, 2005],
+    "area_range": [76, 217],
     "max_buildings": 100,
 }
 
@@ -98,7 +99,7 @@ def default_input_table(schema: dict[str, Any]) -> pd.DataFrame:
                 "Area": 120.0,
                 "EnergyLabel": allowed_labels[1] if len(allowed_labels) > 1 else allowed_labels[0],
             },
-            {"building_id": "building_3", "year": 2018, "Area": 82.0, "EnergyLabel": allowed_labels[0]},
+            {"building_id": "building_3", "year": 1971, "Area": 82.0, "EnergyLabel": allowed_labels[0]},
         ]
     )
 
@@ -155,7 +156,7 @@ def display_intro_slideshow() -> None:
                 st.rerun()
         with controls[1]:
             selected_slide = st.selectbox(
-                "What ComThermSyn helps with",
+                "What SyCoTherm helps with",
                 options=slide_numbers,
                 index=slide_numbers.index(current_slide),
                 format_func=lambda slide_number: INTRO_SCENES[slide_number],
@@ -442,9 +443,9 @@ def display_results(run_dir: Path, key_prefix: str | None = None) -> None:
     st.subheader("Simulation summary")
     metric_cols = st.columns(4)
     with metric_cols[0]:
-        display_metric("Total annual heating energy", total_annual, total_unit)
+        display_metric("Typical-weather winter heating proxy", total_annual, total_unit)
     with metric_cols[1]:
-        display_metric("Peak heat demand", peak_heat, peak_unit)
+        display_metric("Peak heating-demand proxy", peak_heat, peak_unit)
     with metric_cols[2]:
         display_metric("Input buildings", manifest.get("n_input_buildings"))
     with metric_cols[3]:
@@ -458,7 +459,22 @@ def display_results(run_dir: Path, key_prefix: str | None = None) -> None:
     else:
         preferred = [
             column
-            for column in ["building_id", "year", "Area", "EnergyLabel", "R", "C", "A", "Qint"]
+            for column in [
+                "building_id",
+                "year",
+                "period",
+                "Area",
+                "EnergyLabel",
+                "support_level",
+                "R",
+                "C",
+                "A",
+                "Qint",
+                "tau_hours",
+                "C_conditional_center",
+                "C_residual_multiplier",
+                "residual_quantile_C",
+            ]
             if column in synthetic_df.columns
         ]
         st.dataframe(synthetic_df[preferred] if preferred else synthetic_df, use_container_width=True)
@@ -494,10 +510,10 @@ def display_results(run_dir: Path, key_prefix: str | None = None) -> None:
 logo_path = Path("logo.svg") if Path("logo.svg").exists() else Path("logo.png")
 if logo_path.exists():
     st.image(str(logo_path), width=165)
-st.title("ComThermSyn")
+st.title("SyCoTherm")
 st.caption("A Community Thermal Parameter Synthesizer for Energy System Optimization")
 
-st.sidebar.header("ComThermSyn")
+st.sidebar.header("SyCoTherm")
 st.sidebar.caption("Public demo")
 st.sidebar.subheader("Current Setup")
 artifact_root = DEFAULT_ARTIFACT_ROOT
@@ -511,13 +527,13 @@ try:
     deployment_payload = artifacts.get("deployment_model_payload") or {}
     runtime_label = (
         deployment_payload.get("payload_type")
-        or runtime_config.get("strategy")
-        or "public_sampler_v1"
+        or model_metadata.get("model_version")
+        or "task102b_copula_deploy_v1"
     )
     st.sidebar.success("Model files loaded")
     st.sidebar.success("System ready")
     st.sidebar.info(f"Model version\n\n`{runtime_label}`")
-    st.sidebar.info("Release version\n\n`v1.0 (2026-06)`")
+    st.sidebar.info("Release version\n\n`v2.0 (2026-08)`")
     st.sidebar.info(
         f"Supported community size\n\n`Up to {input_schema.get('max_buildings', '-')} buildings`"
     )
@@ -538,17 +554,17 @@ tab_about, tab_submit, tab_load, tab_contact = st.tabs(
 )
 
 with tab_about:
-    st.subheader("ComThermSyn online demo")
+    st.subheader("SyCoTherm online demo")
     st.write(
-        "ComThermSyn: A Community Thermal Parameter Synthesizer for Energy System Optimization "
+        "SyCoTherm: A Community Thermal Parameter Synthesizer for Energy System Optimization "
         "synthesizes public-demo thermal parameters and community heating profiles from simple "
         "building/community inputs."
     )
-    st.subheader("What ComThermSyn helps with")
+    st.subheader("What SyCoTherm helps with")
     # Previous intro slideshow kept for rollback.
     # display_intro_slideshow()
-    render_intro_video("Intro/intro.mp4", max_width=760)
-    st.subheader("How ComThermSyn works")
+    render_intro_video(str(INTRO_DIR / "intro.mp4"), max_width=760)
+    st.subheader("How SyCoTherm works")
     st.markdown(
         """
 1. Submit a case with building or community inputs.
@@ -558,13 +574,35 @@ with tab_about:
         """
     )
     st.info(
-        "This demo uses public-safe deployment artifacts and does not require private raw data."
+        "This standalone demo uses a frozen M0a/Q0 conditional model with joint shrunk-Copula "
+        "residual sampling. EnergyLabel is retained but is not predictive in this version."
     )
 
 with tab_submit:
     st.subheader("Submit Case")
     run_id_input = st.text_input("Run ID", value="CPN8_001")
     overwrite = st.checkbox("overwrite existing run", value=False)
+    sampling_label = st.selectbox(
+        "Sampling mode",
+        [
+            "E4 rank-LHS (representative community, default)",
+            "E4 complete-row (empirical residual combinations)",
+            "Fast LHS (up to 3 evaluated from 16 designs)",
+            "Full Monte Carlo (100 communities)",
+        ],
+        index=0,
+    )
+    selected_sampling_mode = {
+        "E4 rank-LHS (representative community, default)": "e4_rank_lhs_v1",
+        "E4 complete-row (empirical residual combinations)": "e4_complete_row_v1",
+        "Fast LHS (up to 3 evaluated from 16 designs)": "lhs_fast",
+        "Full Monte Carlo (100 communities)": "full_mc",
+    }[sampling_label]
+    st.caption(
+        "E4 rank-LHS is the default representative-community route. "
+        "E4 complete-row, Fast LHS, and Full Monte Carlo remain available for comparison. "
+        "The E4 routes support communities of 2-50 buildings."
+    )
 
     uploaded_csv = st.file_uploader("Upload community CSV", type=["csv"])
     if uploaded_csv is not None:
@@ -604,7 +642,7 @@ with tab_submit:
             if run_dir.exists() and not overwrite:
                 st.warning("Choose a new run_id or check overwrite existing run before submitting.")
             else:
-                with st.spinner("Validating input and running public synthesis..."):
+                with st.spinner("Generating and selecting a complete community realization..."):
                     validated_input = validate_community_input(
                         editor_df,
                         input_schema=input_schema,
@@ -612,11 +650,13 @@ with tab_submit:
                     input_path = run_dir / "inputs" / "community_input.csv"
                     input_path.parent.mkdir(parents=True, exist_ok=True)
                     validated_input.to_csv(input_path, index=False)
+                    selected_runtime_config = dict(artifacts.get("runtime_config") or {})
+                    selected_runtime_config["sampling_mode"] = selected_sampling_mode
 
                     result = run_deployment_synthesis(
                         validated_input,
                         artifacts=artifacts,
-                        runtime_config=artifacts.get("runtime_config"),
+                        runtime_config=selected_runtime_config,
                     )
                     manifest = build_streamlit_output_package(result, run_dir)
 
@@ -657,7 +697,7 @@ with tab_load:
 with tab_contact:
     st.subheader("Contact")
     st.write(
-        "ComThermSyn is developed as an academic online demonstration for "
+        "SyCoTherm is developed as an academic online demonstration for "
         "community-level thermal parameter synthesis and energy-system analysis."
     )
     st.markdown(

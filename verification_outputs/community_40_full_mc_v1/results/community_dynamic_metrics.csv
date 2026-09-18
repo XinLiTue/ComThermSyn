@@ -1,0 +1,4 @@
+metric,value,unit
+peak_heat_demand,192.1456675872729,kW
+max_ramp_per_timestep,4.850646187240031,kW/step
+n_typical_days,3.0,count

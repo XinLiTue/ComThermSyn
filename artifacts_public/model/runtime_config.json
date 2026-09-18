@@ -1,9 +1,32 @@
 {
-  "strategy": "public_sampler_v1",
-  "n_population_candidates": 24,
-  "top_k_proxy": 6,
-  "top_k_full": 2,
-  "proxy_simulation_mode": "typical_weather",
-  "max_buildings": 100,
-  "random_state": 42
+  "default_run_seed": 20260830,
+  "full_mc_candidate_community_count": 100,
+  "heating_proxy": "max((Tset-Ta)/R - A*qg/1000 - Qint, 0)",
+  "lhs_c_tail_excess_weight": 4.0,
+  "lhs_central_c_quantiles": [
+    0.1,
+    0.9
+  ],
+  "lhs_evaluated_candidates": 3,
+  "lhs_hard_marginal_quantiles": [
+    0.005,
+    0.995
+  ],
+  "lhs_joint_typical_quantiles": [
+    0.05,
+    0.95
+  ],
+  "lhs_max_candidates": 16,
+  "lhs_max_tail_weight": 0.25,
+  "lhs_soft_marginal_quantiles": [
+    0.1,
+    0.9
+  ],
+  "lhs_tail_weight": 2.0,
+  "parameter_draw_count": 50,
+  "residual_realizations_per_draw": 2,
+  "sampler_version": "lhs_scale_stable_typicality_v2_20260909",
+  "sampling_mode": "lhs_fast",
+  "selection_rule": "lhs_scale_stable_typicality_v2",
+  "typical_day_equivalent_days": 151
 }

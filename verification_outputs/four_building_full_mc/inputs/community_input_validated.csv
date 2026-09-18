@@ -1,0 +1,5 @@
+building_id,year,Area,EnergyLabel,period,support_level
+building_1,1985,95,C,1975 - 1991,adjacent
+building_2,2001,120,B,1992 - 2005,nearly_unsupported
+building_3,1971,82,A,1965 - 1974,core
+4,1990,90,B,1975 - 1991,adjacent

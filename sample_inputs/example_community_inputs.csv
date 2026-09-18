@@ -1,5 +1,6 @@
 building_id,year,Area,EnergyLabel
-demo_1,1968,95,D
-demo_2,1987,120,C
-demo_3,2003,145,A
-demo_4,1996,130,B
+house_001,1958,102,A
+house_002,1968,118,C
+house_003,1972,89,D
+house_004,1983,135,B
+house_005,1990,96,unknown

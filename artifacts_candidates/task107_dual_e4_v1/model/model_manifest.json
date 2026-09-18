@@ -1,0 +1,51 @@
+{
+  "anonymous_rank_only": true,
+  "bundle_version": "task107_dual_e4_oof_v1",
+  "contains_private_identifiers": false,
+  "contains_raw_dalen_rows": false,
+  "contains_validation_or_test_targets": false,
+  "default_sampling_mode": "lhs_fast",
+  "files": [
+    {
+      "path": "model/anonymous_residual_rank_template.csv",
+      "sha256": "af42ad80526e647e681269808ec435e523e853aa43c004dec7eeed59a55d8628"
+    },
+    {
+      "path": "model/copula_correlation.json",
+      "sha256": "9d3b32ae1ad066c72c36c859e01484a7523956ca30ced0c04aaddd79128dadfc"
+    },
+    {
+      "path": "model/input_schema.json",
+      "sha256": "23d9ed819eab322c9fc7586768953350abb8dadc260ea5f3ef7e4ab0025a108e"
+    },
+    {
+      "path": "model/model_metadata.json",
+      "sha256": "363c9c89b3a4b4837ee8228fd317d9a97a297e69ea25b3c48d0748bc651797fa"
+    },
+    {
+      "path": "model/parameter_draws.parquet",
+      "sha256": "85c20094aec6bc1aae690782051ea9669ca4d9d3f5fb7d7803dd69e96b960fdf"
+    },
+    {
+      "path": "model/q_period_scales.parquet",
+      "sha256": "8518971b9cd6e522bfa3879d067f22b901cc697edae084ced831e73267db9343"
+    },
+    {
+      "path": "model/residual_marginals.parquet",
+      "sha256": "aba4546021bc30715a06f1033672df6b33801e9fe1ab4630e0ccd380fc5b0993"
+    },
+    {
+      "path": "model/runtime_config.json",
+      "sha256": "846d0b9dc961a81e8835f8f7b284c52b9dcf8482d05daacc462e8d1566dfeb5d"
+    },
+    {
+      "path": "weather/typical_day_weights.json",
+      "sha256": "8616fcbe396f1730c889501991b9b508153a602bdac2bf69e54143037550024a"
+    },
+    {
+      "path": "weather/typical_weather_scenarios.json",
+      "sha256": "6c9bd2e68db3f35f99b944727135bef6eba1ed98567b29dcb1f27790fb46e49a"
+    }
+  ],
+  "source_bundle_manifest_sha256": "0b4d40f8bf0fd363bd925d338efd1175ee14a20bbb00b33eff91b5ccd0e7f807"
+}

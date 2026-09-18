@@ -1,0 +1,3 @@
+metric,value,unit,interpretation
+total_annual_heating_energy,36162.48151087144,kWh,typical-weather winter heating-demand proxy; not measured energy
+typical_day_proxy_annual_heating_energy,36162.48151087144,kWh,weighted typical days multiplied by equivalent winter days

@@ -1,0 +1,32 @@
+{
+  "candidate_community_count": 200,
+  "energy_label_effect_used": false,
+  "files": [
+    "inputs/community_input_validated.csv",
+    "results/generated_building_parameters.csv",
+    "results/community_annual_energy_summary.csv",
+    "results/typical_day_community_profile.csv",
+    "results/community_dynamic_metrics.csv",
+    "results/candidate_community_summary.csv"
+  ],
+  "model_version": "task102b_copula_deploy_v1_20260830",
+  "n_generated_buildings": 6,
+  "n_input_buildings": 6,
+  "payload_type": "community_rcaq_typical_realization",
+  "run_seed": 20260830,
+  "sampling_mode": "e4_rank_lhs_v1",
+  "selected_community_id": "e4_rank_lhs_v1__b039__d01",
+  "selection_rule": "whole_community_robust_medoid_v1",
+  "support_counts": {
+    "adjacent": 3,
+    "core": 2,
+    "nearly_unsupported": 1
+  },
+  "synthesis_mode": "standalone_shrunk_copula_e4_rank_lhs_v1",
+  "warnings": [
+    "Development candidate only: no address-level, population, privacy, or measured-energy claim.",
+    "EnergyLabel is preserved in output but does not alter RCAQ in this frozen model.",
+    "Annual energy and peak values are typical-weather heating-demand proxies.",
+    "At least one 1992-2005 building uses nearly unsupported calibration evidence (n=1)."
+  ]
+}
