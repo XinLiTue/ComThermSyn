@@ -507,7 +507,8 @@ def display_results(run_dir: Path, key_prefix: str | None = None) -> None:
             df_download(tables[key], labels[key], filenames[key])
 
 
-logo_path = Path("logo.svg") if Path("logo.svg").exists() else Path("logo.png")
+logo_svg_path = BASE_DIR / "logo.svg"
+logo_path = logo_svg_path if logo_svg_path.exists() else BASE_DIR / "logo.jpg"
 if logo_path.exists():
     st.image(str(logo_path), width=165)
 st.title("SyCoTherm")
@@ -557,8 +558,8 @@ with tab_about:
     st.subheader("SyCoTherm online demo")
     st.write(
         "SyCoTherm: A Community Thermal Parameter Synthesizer for Energy System Optimization "
-        "synthesizes public-demo thermal parameters and community heating profiles from simple "
-        "building/community inputs."
+        # "synthesizes public-demo thermal parameters and community heating profiles from simple "
+        # "building/community inputs."
     )
     st.subheader("What SyCoTherm helps with")
     # Previous intro slideshow kept for rollback.
