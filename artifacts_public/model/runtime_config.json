@@ -1,5 +1,12 @@
 {
+  "available_sampling_modes": [
+    "e4_rank_lhs_v1",
+    "e4_complete_row_v1",
+    "lhs_fast",
+    "full_mc"
+  ],
   "default_run_seed": 20260830,
+  "e4_max_buildings": 50,
   "full_mc_candidate_community_count": 100,
   "heating_proxy": "max((Tset-Ta)/R - A*qg/1000 - Qint, 0)",
   "lhs_c_tail_excess_weight": 4.0,
@@ -26,7 +33,7 @@
   "parameter_draw_count": 50,
   "residual_realizations_per_draw": 2,
   "sampler_version": "lhs_scale_stable_typicality_v2_20260909",
-  "sampling_mode": "lhs_fast",
-  "selection_rule": "lhs_scale_stable_typicality_v2",
+  "sampling_mode": "e4_rank_lhs_v1",
+  "selection_rule": "whole_community_robust_medoid_v1",
   "typical_day_equivalent_days": 151
 }

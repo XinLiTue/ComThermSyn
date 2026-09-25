@@ -91,6 +91,13 @@ part of standalone inference. Rebuild only after the frozen Project artifacts ch
 uv run python deploy\scripts\build_model_bundle.py
 ```
 
+Promote the accepted Task107 candidate (including its anonymous rank template) to the formal
+public bundle with an E4 default and freshly calculated protected-file hashes:
+
+```powershell
+uv run python deploy\scripts\promote_candidate_bundle.py
+```
+
 Run focused tests:
 
 ```powershell

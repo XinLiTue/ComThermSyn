@@ -22,7 +22,7 @@ def main() -> None:
     parser.add_argument(
         "--artifact-root",
         type=Path,
-        default=DEPLOY_ROOT / "artifacts_candidates" / "task107_dual_e4_v1",
+        default=DEPLOY_ROOT / "artifacts_public",
     )
     parser.add_argument(
         "--sampling-mode",

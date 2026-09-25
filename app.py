@@ -25,7 +25,7 @@ st.set_page_config(
 
 
 BASE_DIR = Path(__file__).resolve().parent
-DEFAULT_ARTIFACT_ROOT = BASE_DIR / "artifacts_candidates" / "task107_dual_e4_v1"
+DEFAULT_ARTIFACT_ROOT = BASE_DIR / "artifacts_public"
 DEFAULT_OUTPUT_ROOT = BASE_DIR / "streamlit_demo_outputs" / "jobs"
 INTRO_DIR = BASE_DIR / "Intro"
 INTRO_SLIDE_COUNT = 6
@@ -112,7 +112,7 @@ def schema_columns(schema: dict[str, Any]) -> list[str]:
     return columns
 
 
-def df_download(df: pd.DataFrame | None, label: str, filename: str) -> None:
+def df_download(df: pd.DataFrame | None, label: str, filename: str, *, key: str) -> None:
     if df is None:
         return
     st.download_button(
@@ -120,6 +120,7 @@ def df_download(df: pd.DataFrame | None, label: str, filename: str) -> None:
         data=df.to_csv(index=False).encode("utf-8"),
         file_name=filename,
         mime="text/csv",
+        key=key,
     )
 
 
@@ -504,7 +505,12 @@ def display_results(run_dir: Path, key_prefix: str | None = None) -> None:
     }
     for column, key in zip(download_cols, ["synthetic", "annual", "profile", "dynamic"]):
         with column:
-            df_download(tables[key], labels[key], filenames[key])
+            df_download(
+                tables[key],
+                labels[key],
+                filenames[key],
+                key=f"{key_prefix}_download_{key}",
+            )
 
 
 logo_svg_path = BASE_DIR / "logo.svg"

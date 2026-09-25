@@ -33,9 +33,6 @@ class OnlineRuntimeTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.artifacts = load_deployment_artifacts(DEPLOY_ROOT / "artifacts_public")
-        cls.e4_artifacts = load_deployment_artifacts(
-            DEPLOY_ROOT / "artifacts_candidates" / "task107_dual_e4_v1"
-        )
 
     def test_public_bundle_is_sanitized_and_frozen(self) -> None:
         manifest = self.artifacts["model_manifest"]
@@ -45,6 +42,14 @@ class OnlineRuntimeTests(unittest.TestCase):
         self.assertEqual(self.artifacts["parameter_draws"]["parameter_draw_id"].nunique(), 50)
         self.assertEqual(set(self.artifacts["residual_marginals"]["component"]), {"G", "C", "A", "Q"})
         self.assertEqual(len(self.artifacts["residual_marginals"]), 200)
+        self.assertIn("residual_rank_template", self.artifacts)
+        self.assertEqual(self.artifacts["residual_rank_template"].shape, (50, 5))
+        self.assertEqual(manifest["default_sampling_mode"], "e4_rank_lhs_v1")
+        self.assertEqual(self.artifacts["runtime_config"]["sampling_mode"], "e4_rank_lhs_v1")
+        self.assertEqual(
+            self.artifacts["runtime_config"]["selection_rule"],
+            "whole_community_robust_medoid_v1",
+        )
 
     def test_runtime_is_deterministic_and_selects_one_whole_community(self) -> None:
         first = run_deployment_synthesis(sample_roster(), artifacts=self.artifacts)
@@ -56,19 +61,13 @@ class OnlineRuntimeTests(unittest.TestCase):
         self.assertEqual(len(selected), len(sample_roster()))
         self.assertEqual(selected["selected_realization_id"].nunique(), 1)
         evaluated_count = len(first["candidate_community_summary_df"])
-        self.assertGreaterEqual(evaluated_count, 1)
-        self.assertLessEqual(evaluated_count, 3)
+        self.assertEqual(evaluated_count, 200)
         self.assertEqual(int(first["candidate_community_summary_df"]["is_selected_typical"].sum()), 1)
         self.assertTrue((selected[["R", "C", "A", "tau_hours"]].to_numpy() > 0).all())
-        self.assertEqual(first["runtime_metadata"]["sampling_mode"], "lhs_fast")
-        self.assertEqual(first["runtime_metadata"]["planned_probability_designs"], 16)
-        self.assertFalse(first["runtime_metadata"]["acceptance_fallback_used"])
-        summary = first["candidate_community_summary_df"].loc[
-            first["candidate_community_summary_df"]["is_selected_typical"]
-        ].iloc[0]
-        self.assertLessEqual(summary["c_tail_count"], summary["allowed_c_tail_count"])
-        self.assertLessEqual(
-            summary["c_upper_tail_count"], summary["allowed_c_upper_tail_count"]
+        self.assertEqual(first["runtime_metadata"]["sampling_mode"], "e4_rank_lhs_v1")
+        self.assertEqual(
+            first["runtime_metadata"]["selection_rule"],
+            "whole_community_robust_medoid_v1",
         )
 
     def test_full_mc_remains_available_as_reference(self) -> None:
@@ -81,7 +80,7 @@ class OnlineRuntimeTests(unittest.TestCase):
         self.assertEqual(len(result["candidate_community_summary_df"]), 100)
 
     def test_optional_e4_modes_are_deterministic_and_bounded(self) -> None:
-        artifacts = self.e4_artifacts
+        artifacts = self.artifacts
         cleaned = validate_community_input(sample_roster(), input_schema=artifacts["input_schema"])
         for mode in ("e4_rank_lhs_v1", "e4_complete_row_v1"):
             with self.subTest(mode=mode):
@@ -107,7 +106,12 @@ class OnlineRuntimeTests(unittest.TestCase):
                 "EnergyLabel": ["C", "B", "A", "B", "A", "B"],
             }
         )
-        result = run_deployment_synthesis(roster, artifacts=self.artifacts)
+        artifacts = dict(self.artifacts)
+        artifacts["runtime_config"] = {
+            **self.artifacts["runtime_config"],
+            "sampling_mode": "lhs_fast",
+        }
+        result = run_deployment_synthesis(roster, artifacts=artifacts)
         self.assertEqual(len(result["generated_building_parameters_df"]), 6)
         self.assertFalse(result["runtime_metadata"]["acceptance_fallback_used"])
         selected_summary = result["candidate_community_summary_df"].loc[
