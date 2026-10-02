@@ -13,7 +13,9 @@ import streamlit as st
 from src.artifact_io import load_deployment_artifacts, validate_public_artifact_safety
 from src.deploy_runtime import (
     build_streamlit_output_package,
+    fill_optional_energy_labels,
     run_deployment_synthesis,
+    simulate_hourly_rcaq_control,
     validate_community_input,
 )
 
@@ -21,6 +23,66 @@ from src.deploy_runtime import (
 st.set_page_config(
     page_title="SyCoTherm",
     layout="wide",
+)
+
+st.markdown(
+    """
+    <style>
+    .block-container {
+        max-width: 1280px;
+        padding-top: 2rem;
+        padding-bottom: 3rem;
+    }
+    .sycotherm-hero {
+        margin: 0.35rem 0 1.8rem 0;
+    }
+    .sycotherm-hero h1 {
+        font-size: clamp(2.25rem, 4vw, 3.25rem);
+        line-height: 1.08;
+        letter-spacing: -0.025em;
+        margin: 0;
+    }
+    .sycotherm-hero p {
+        font-size: clamp(1.05rem, 2vw, 1.35rem);
+        line-height: 1.5;
+        margin: 0.75rem 0 0 0;
+        color: rgba(49, 51, 63, 0.72);
+    }
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 0.55rem;
+        flex-wrap: wrap;
+        border-bottom: 1px solid rgba(128, 128, 128, 0.25);
+        padding-bottom: 0.4rem;
+    }
+    .stTabs [data-baseweb="tab"] {
+        min-height: 3.9rem;
+        padding: 0.8rem 1.5rem;
+        border-radius: 0.65rem 0.65rem 0 0;
+    }
+    .stTabs [data-baseweb="tab"] p {
+        font-size: 1.3rem;
+        font-weight: 700;
+        letter-spacing: 0.01em;
+    }
+    .example-formula {
+        border: 1px solid rgba(128, 128, 128, 0.25);
+        border-radius: 0.8rem;
+        padding: 1rem 1.25rem;
+        margin: 0.7rem 0 1.2rem 0;
+        background: rgba(128, 128, 128, 0.06);
+        font-size: 1.05rem;
+    }
+    @media (max-width: 700px) {
+        .block-container { padding-top: 1.2rem; }
+        .stTabs [data-baseweb="tab"] {
+            min-height: 3.25rem;
+            padding: 0.6rem 0.85rem;
+        }
+        .stTabs [data-baseweb="tab"] p { font-size: 1.1rem; }
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
 )
 
 
@@ -364,6 +426,139 @@ def infer_timestep_hours(profile_df: pd.DataFrame, time_col: str) -> float | Non
     return float(diffs.median())
 
 
+def hourly_rcaq_example(
+    resistance: float,
+    capacitance: float,
+    solar_aperture: float,
+    internal_gains: float,
+) -> pd.DataFrame:
+    outdoor_temperature = [
+        4.0, 3.5, 3.0, 2.5, 2.0, 2.0, 3.0, 5.0,
+        7.0, 9.0, 11.0, 12.0, 13.0, 13.0, 12.0, 11.0,
+        9.0, 8.0, 7.0, 6.0, 5.0, 5.0, 4.5, 4.0,
+    ]
+    solar_radiation = [
+        0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.02,
+        0.08, 0.16, 0.26, 0.35, 0.42, 0.45, 0.40, 0.30,
+        0.18, 0.08, 0.02, 0.0, 0.0, 0.0, 0.0, 0.0,
+    ]
+    target_temperature = [
+        17.0, 17.0, 17.0, 17.0, 17.0, 17.0, 20.0, 20.0,
+        20.0, 18.0, 18.0, 18.0, 18.0, 18.0, 18.0, 18.0,
+        18.0, 21.0, 21.0, 21.0, 21.0, 21.0, 21.0, 17.0,
+    ]
+    return simulate_hourly_rcaq_control(
+        resistance_c_per_kw=resistance,
+        capacitance_kwh_per_c=capacitance,
+        solar_aperture_m2=solar_aperture,
+        internal_gains_kw=internal_gains,
+        outdoor_temperature_c=outdoor_temperature,
+        solar_radiation_kw_m2=solar_radiation,
+        target_temperature_c=target_temperature,
+        initial_indoor_temperature_c=18.0,
+        time_step_hours=1.0,
+    )
+
+
+def render_basic_use_case() -> None:
+    st.subheader("24-hour RCAQ heating-control example")
+    st.write(
+        "When indoor temperature changes, C represents the building's ability to store or "
+        "release heat. Raising the indoor temperature requires heat to be stored in the "
+        "building mass; when the temperature falls, part of that stored heat is released. "
+        "This example uses 24 one-hour control points to show that dynamic effect."
+    )
+    st.markdown(
+        """
+        <div class="example-formula">
+            <strong>Hourly heating demand</strong><br>
+            Q<sub>heat</sub> = max(
+            C × (T<sub>next</sub> − T<sub>indoor</sub>) / Δt
+            + (T<sub>indoor</sub> − T<sub>outdoor</sub>) / R
+            − A × q<sub>solar</sub> − Q<sub>int</sub>, 0)
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    st.markdown("#### Example building parameters")
+    parameter_cols = st.columns(4)
+    with parameter_cols[0]:
+        resistance = st.number_input(
+            "R (degC/kW)", min_value=0.01, value=2.0, step=0.1, key="example_r"
+        )
+    with parameter_cols[1]:
+        capacitance = st.number_input(
+            "C (kWh/degC)", min_value=0.01, value=5.0, step=0.5, key="example_c"
+        )
+    with parameter_cols[2]:
+        solar_aperture = st.number_input(
+            "A (m2)", min_value=0.0, value=4.0, step=0.5, key="example_a"
+        )
+    with parameter_cols[3]:
+        internal_gains = st.number_input(
+            "Qint (kW)", value=0.6, step=0.1, key="example_qint"
+        )
+
+    example_df = hourly_rcaq_example(
+        float(resistance),
+        float(capacitance),
+        float(solar_aperture),
+        float(internal_gains),
+    )
+    st.info(
+        "At each hour, the controller chooses the minimum non-negative heating power needed "
+        "to reach the next target temperature. **Envelope heat loss = (Tin − Tout) / R**. "
+        "**A is the effective solar aperture area** used to convert incident solar radiation "
+        "into useful solar heat gain: **Solar gain = A × qsolar**, where qsolar is in kW/m2."
+    )
+
+    total_heating_kwh = float(example_df["Heating power (kW)"].sum())
+    peak_heating_kw = float(example_df["Heating power (kW)"].max())
+    peak_solar_gain_kw = float(example_df["Solar gain (kW)"].max())
+    metric_cols = st.columns(3)
+    metric_cols[0].metric("24-hour heating energy", f"{total_heating_kwh:.1f} kWh")
+    metric_cols[1].metric("Peak hourly heating", f"{peak_heating_kw:.1f} kW")
+    metric_cols[2].metric("Peak solar gain", f"{peak_solar_gain_kw:.2f} kW")
+
+    temperature_plot = example_df[
+        ["Hour", "Indoor end (degC)", "Target end (degC)", "Outdoor (degC)"]
+    ].melt(id_vars="Hour", var_name="Temperature series", value_name="Temperature (degC)")
+    temperature_figure = px.line(
+        temperature_plot,
+        x="Hour",
+        y="Temperature (degC)",
+        color="Temperature series",
+        markers=True,
+        title="Hourly indoor temperature, target, and outdoor temperature",
+    )
+    st.plotly_chart(temperature_figure, use_container_width=True)
+
+    heating_figure = px.bar(
+        example_df,
+        x="Hour",
+        y="Heating power (kW)",
+        title="Hourly heating-control points",
+    )
+    st.plotly_chart(heating_figure, use_container_width=True)
+
+    st.markdown("#### Hourly calculation table")
+    st.dataframe(
+        example_df,
+        use_container_width=True,
+        hide_index=True,
+        column_config={
+            column: st.column_config.NumberColumn(column, format="%.2f")
+            for column in example_df.columns
+        },
+    )
+    st.info(
+        "This is an educational deterministic 1R1C control example with one-hour steps and no "
+        "active cooling. It illustrates how RCAQ parameters enter a dynamic calculation; it is "
+        "not a measured-energy result or a full building-control optimization."
+    )
+
+
 def plot_typical_day_profile(profile_df: pd.DataFrame | None, key_prefix: str) -> None:
     filtered_df, time_col, demand_col = filter_profile(profile_df, key_prefix)
     if filtered_df is None or time_col is None or demand_col is None:
@@ -516,9 +711,16 @@ def display_results(run_dir: Path, key_prefix: str | None = None) -> None:
 logo_svg_path = BASE_DIR / "logo.svg"
 logo_path = logo_svg_path if logo_svg_path.exists() else BASE_DIR / "logo.jpg"
 if logo_path.exists():
-    st.image(str(logo_path), width=165)
-st.title("SyCoTherm")
-st.caption("A Community Thermal Parameter Synthesizer for Energy System Optimization")
+    st.image(str(logo_path), width=285)
+st.markdown(
+    """
+    <div class="sycotherm-hero">
+        <h1>SyCoTherm</h1>
+        <p>A Community Thermal Parameter Synthesizer for Energy System Optimization</p>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
 
 st.sidebar.header("SyCoTherm")
 st.sidebar.caption("Public demo")
@@ -556,8 +758,8 @@ st.sidebar.caption(
     "For academic research and demonstration purposes only."
 )
 
-tab_about, tab_submit, tab_load, tab_contact = st.tabs(
-    ["About", "Submit Case", "Load Results", "Contact"]
+tab_about, tab_submit, tab_load, tab_example, tab_contact = st.tabs(
+    ["About", "Submit Case", "Load Results", "Basic Example", "Contact"]
 )
 
 with tab_about:
@@ -571,7 +773,7 @@ with tab_about:
     st.subheader("What SyCoTherm helps with")
     # Previous intro slideshow kept for rollback.
     # display_intro_slideshow()
-    render_intro_video(str(INTRO_DIR / "intro.mp4"), max_width=760)
+    render_intro_video(str(INTRO_DIR / "IntroVideo_muted.mp4"), max_width=760)
     st.subheader("How SyCoTherm works")
     st.markdown(
         """
@@ -627,6 +829,10 @@ with tab_submit:
         if column not in input_df.columns:
             input_df[column] = None
     st.markdown("**Community input table**")
+    st.caption(
+        "EnergyLabel is optional in this web form. Blank or missing values are saved as "
+        "`unknown` and do not affect RCAQ generation in the current frozen model."
+    )
     editor_df = st.data_editor(
         input_df[columns],
         num_rows="dynamic",
@@ -651,8 +857,9 @@ with tab_submit:
                 st.warning("Choose a new run_id or check overwrite existing run before submitting.")
             else:
                 with st.spinner("Generating and selecting a complete community realization..."):
+                    submission_df = fill_optional_energy_labels(editor_df)
                     validated_input = validate_community_input(
-                        editor_df,
+                        submission_df,
                         input_schema=input_schema,
                     )
                     input_path = run_dir / "inputs" / "community_input.csv"
@@ -666,20 +873,23 @@ with tab_submit:
                         artifacts=artifacts,
                         runtime_config=selected_runtime_config,
                     )
-                    manifest = build_streamlit_output_package(result, run_dir)
+                    build_streamlit_output_package(result, run_dir)
 
                 st.success(f"Run complete: `{run_dir}`")
-                st.caption(
-                    f"payload_type={manifest.get('payload_type', '-')}, "
-                    f"synthesis_mode={manifest.get('synthesis_mode', '-')}"
+                st.session_state["last_completed_run_id"] = run_id
+                st.info(
+                    f"Next step: open **Load Results** and load Run ID **{run_id}** to view "
+                    "charts, synthesized RCAQ parameters, and downloads."
                 )
-                display_results(run_dir, key_prefix="submitted_result")
         except Exception as exc:
             st.error(f"Run failed: {exc}")
 
 with tab_load:
     st.subheader("Load Results")
-    load_run_id_input = st.text_input("Run ID to load", value="CPN8_001")
+    load_run_id_input = st.text_input(
+        "Run ID to load",
+        value=st.session_state.get("last_completed_run_id", "CPN8_001"),
+    )
     if st.button("Load Results"):
         try:
             load_run_id = safe_run_id(load_run_id_input)
@@ -701,6 +911,9 @@ with tab_load:
                 st.session_state.pop("loaded_run_dir", None)
                 st.rerun()
         display_results(loaded_run_dir, key_prefix="loaded_result")
+
+with tab_example:
+    render_basic_use_case()
 
 with tab_contact:
     st.subheader("Contact")

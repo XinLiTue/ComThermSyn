@@ -12,7 +12,110 @@ from .copula_runtime import period_from_year
 from .lhs_runtime import generate_deployment_community
 
 
+def calculate_heating_power_kw(
+    indoor_temperature_c: float | np.ndarray | pd.Series,
+    outdoor_temperature_c: float | np.ndarray | pd.Series,
+    thermal_resistance_c_per_kw: float,
+    solar_aperture_m2: float,
+    solar_radiation_w_m2: float | np.ndarray | pd.Series,
+    internal_gains_kw: float,
+) -> float | np.ndarray | pd.Series:
+    """Return the deployed steady-state heating-demand proxy in kW."""
+    envelope_kw = (
+        indoor_temperature_c - outdoor_temperature_c
+    ) / thermal_resistance_c_per_kw
+    solar_kw = solar_aperture_m2 * solar_radiation_w_m2 / 1000.0
+    return np.maximum(envelope_kw - solar_kw - internal_gains_kw, 0.0)
+
+
+def simulate_hourly_rcaq_control(
+    *,
+    resistance_c_per_kw: float,
+    capacitance_kwh_per_c: float,
+    solar_aperture_m2: float,
+    internal_gains_kw: float,
+    outdoor_temperature_c: list[float],
+    solar_radiation_kw_m2: list[float],
+    target_temperature_c: list[float],
+    initial_indoor_temperature_c: float,
+    time_step_hours: float = 1.0,
+) -> pd.DataFrame:
+    """Simulate minimum non-negative hourly heating for a 1R1C target schedule."""
+    if resistance_c_per_kw <= 0 or capacitance_kwh_per_c <= 0:
+        raise ValueError("R and C must be positive")
+    if time_step_hours <= 0:
+        raise ValueError("time_step_hours must be positive")
+    n_steps = len(outdoor_temperature_c)
+    if n_steps == 0 or not (
+        len(solar_radiation_kw_m2) == n_steps == len(target_temperature_c)
+    ):
+        raise ValueError("hourly weather and target schedules must have equal non-zero length")
+
+    indoor = float(initial_indoor_temperature_c)
+    rows: list[dict[str, float | int]] = []
+    for hour, (outdoor, radiation, target) in enumerate(
+        zip(
+            outdoor_temperature_c,
+            solar_radiation_kw_m2,
+            target_temperature_c,
+            strict=True,
+        )
+    ):
+        outdoor = float(outdoor)
+        radiation = float(radiation)
+        target = float(target)
+        envelope_loss_kw = (indoor - outdoor) / resistance_c_per_kw
+        solar_gain_kw = solar_aperture_m2 * radiation
+        target_storage_change_kw = (
+            capacitance_kwh_per_c * (target - indoor) / time_step_hours
+        )
+        heating_kw = max(
+            target_storage_change_kw
+            + envelope_loss_kw
+            - solar_gain_kw
+            - internal_gains_kw,
+            0.0,
+        )
+        net_storage_rate_kw = (
+            heating_kw + solar_gain_kw + internal_gains_kw - envelope_loss_kw
+        )
+        next_indoor = indoor + (
+            time_step_hours * net_storage_rate_kw / capacitance_kwh_per_c
+        )
+        rows.append(
+            {
+                "Hour": hour,
+                "Indoor start (degC)": indoor,
+                "Target end (degC)": target,
+                "Indoor end (degC)": next_indoor,
+                "Outdoor (degC)": outdoor,
+                "Solar radiation (kW/m2)": radiation,
+                "Envelope heat loss (kW)": envelope_loss_kw,
+                "Solar gain (kW)": solar_gain_kw,
+                "Internal gain (kW)": internal_gains_kw,
+                "Heating power (kW)": heating_kw,
+            }
+        )
+        indoor = next_indoor
+    return pd.DataFrame(rows)
+
+
 PRIVATE_INPUT_TOKENS = ("address", "postcode", "user_id", "participant", "target", "truth")
+
+
+def fill_optional_energy_labels(
+    community_input: pd.DataFrame,
+    *,
+    default_label: str = "unknown",
+) -> pd.DataFrame:
+    """Fill missing web-form EnergyLabel values without changing the frozen schema."""
+    frame = community_input.copy()
+    if "EnergyLabel" not in frame.columns:
+        frame["EnergyLabel"] = default_label
+        return frame
+    labels = frame["EnergyLabel"].astype("string").str.strip()
+    frame["EnergyLabel"] = labels.fillna(default_label).replace("", default_label)
+    return frame
 
 
 def validate_community_input(
@@ -103,11 +206,14 @@ def _typical_day_profiles(
         timestep_hours = float(np.median(np.diff(series["hour"].to_numpy(dtype=float))))
         day_weight = float(scenario["weight"])
         for building in buildings.itertuples(index=False):
-            envelope_kw = (series["setpoint_C"] - series["outdoor_temperature_C"]) / float(
-                building.R
+            heat_kw = calculate_heating_power_kw(
+                series["setpoint_C"],
+                series["outdoor_temperature_C"],
+                float(building.R),
+                float(building.A),
+                series["solar_radiation_W_m2"],
+                float(building.Qint),
             )
-            solar_kw = float(building.A) * series["solar_radiation_W_m2"] / 1000.0
-            heat_kw = np.maximum(envelope_kw - solar_kw - float(building.Qint), 0.0)
             for weather_row, demand in zip(series.itertuples(index=False), heat_kw, strict=True):
                 profile_rows.append(
                     {

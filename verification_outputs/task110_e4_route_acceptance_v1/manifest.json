@@ -1,0 +1,68 @@
+{
+  "artifact_audit": {
+    "artifact_hashes_pass": true,
+    "available_sampling_modes": [
+      "e4_rank_lhs_v1",
+      "e4_complete_row_v1",
+      "lhs_fast",
+      "full_mc"
+    ],
+    "default_sampling_mode": "e4_rank_lhs_v1",
+    "e4_max_buildings": 50,
+    "manifest_default_sampling_mode": "e4_rank_lhs_v1",
+    "model_manifest_sha256": "7a263e81ab84f190ef4d8bc47af01ac7b225a513458654c5657cbc103a4072d1",
+    "privacy_flags": {
+      "anonymous_rank_only": true,
+      "contains_private_identifiers": false,
+      "contains_raw_dalen_rows": false,
+      "contains_validation_or_test_targets": false
+    },
+    "protected_file_count": 10,
+    "protected_hashes": {
+      "model/anonymous_residual_rank_template.csv": "af42ad80526e647e681269808ec435e523e853aa43c004dec7eeed59a55d8628",
+      "model/copula_correlation.json": "9d3b32ae1ad066c72c36c859e01484a7523956ca30ced0c04aaddd79128dadfc",
+      "model/input_schema.json": "23d9ed819eab322c9fc7586768953350abb8dadc260ea5f3ef7e4ab0025a108e",
+      "model/model_metadata.json": "363c9c89b3a4b4837ee8228fd317d9a97a297e69ea25b3c48d0748bc651797fa",
+      "model/parameter_draws.parquet": "85c20094aec6bc1aae690782051ea9669ca4d9d3f5fb7d7803dd69e96b960fdf",
+      "model/q_period_scales.parquet": "8518971b9cd6e522bfa3879d067f22b901cc697edae084ced831e73267db9343",
+      "model/residual_marginals.parquet": "aba4546021bc30715a06f1033672df6b33801e9fe1ab4630e0ccd380fc5b0993",
+      "model/runtime_config.json": "39813be762281f1d11b320aef11d9aa96d5d32347c9060da590014e004de3b93",
+      "weather/typical_day_weights.json": "8616fcbe396f1730c889501991b9b508153a602bdac2bf69e54143037550024a",
+      "weather/typical_weather_scenarios.json": "6c9bd2e68db3f35f99b944727135bef6eba1ed98567b29dcb1f27790fb46e49a"
+    },
+    "rank_columns": [
+      "template_row_index",
+      "rank_G",
+      "rank_C",
+      "rank_A",
+      "rank_Q"
+    ],
+    "rank_permutations_pass": true,
+    "rank_template_shape": [
+      50,
+      5
+    ]
+  },
+  "deploy_tests": "9 passed",
+  "evidence_boundary": "deploy_smoke_plus_accepted_retrospective_internal_nonblind_task109",
+  "interface_audit": {
+    "cli_all_modes": true,
+    "cli_artifacts_public": true,
+    "cli_default_e4_rank_lhs": true,
+    "runtime_reports_selected_mode": true,
+    "streamlit_all_modes": true,
+    "streamlit_artifacts_public": true,
+    "streamlit_default_e4_rank_lhs": true
+  },
+  "output_hashes": {
+    "deploy_smoke_runtime.csv": "02d08fba539bddfd8ec458a1dad5c1fafbf72b35eb2eeb62dee935456151417b",
+    "report.md": "caacfc144d623c92617da4a274da30f336204e388c71db12fac6c4c543131b27",
+    "route_tradeoff.csv": "a62a38b2e34769dc6c581e7f5eb1f474d0087ab04514d034e131d9e7631eaf9c"
+  },
+  "production_code_changed": false,
+  "public_default_changed": false,
+  "smoke_all_pass": true,
+  "status": "pass",
+  "task109_manifest_sha256": "19117385e65eb3d6249a39d00fe98ac65513f3a70c3345d7abc6dee78c59b654",
+  "version_id": "task110_e4_route_acceptance_v1"
+}

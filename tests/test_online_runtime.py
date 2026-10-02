@@ -14,7 +14,14 @@ if str(DEPLOY_ROOT) not in sys.path:
 
 from src.artifact_io import load_deployment_artifacts
 from src.copula_runtime import generate_candidate_communities
-from src.deploy_runtime import _typical_day_profiles, run_deployment_synthesis, validate_community_input
+from src.deploy_runtime import (
+    _typical_day_profiles,
+    calculate_heating_power_kw,
+    fill_optional_energy_labels,
+    run_deployment_synthesis,
+    simulate_hourly_rcaq_control,
+    validate_community_input,
+)
 from src.lhs_runtime import generate_deployment_community
 
 
@@ -132,6 +139,24 @@ class OnlineRuntimeTests(unittest.TestCase):
         )
         self.assertEqual(updated["generated_building_parameters_df"]["EnergyLabel"].tolist(), ["G", "F", "B"])
 
+    def test_web_form_can_fill_missing_energy_labels_as_unknown(self) -> None:
+        missing_column = sample_roster().drop(columns="EnergyLabel")
+        filled_missing = fill_optional_energy_labels(missing_column)
+        validated_missing = validate_community_input(
+            filled_missing,
+            input_schema=self.artifacts["input_schema"],
+        )
+        self.assertEqual(validated_missing["EnergyLabel"].tolist(), ["unknown"] * 3)
+
+        blank_values = sample_roster()
+        blank_values["EnergyLabel"] = [None, "", "   "]
+        filled_blank = fill_optional_energy_labels(blank_values)
+        validated_blank = validate_community_input(
+            filled_blank,
+            input_schema=self.artifacts["input_schema"],
+        )
+        self.assertEqual(validated_blank["EnergyLabel"].tolist(), ["unknown"] * 3)
+
     def test_hierarchical_seed_keeps_existing_buildings_stable(self) -> None:
         roster = sample_roster()
         cleaned = validate_community_input(roster, input_schema=self.artifacts["input_schema"])
@@ -186,6 +211,35 @@ class OnlineRuntimeTests(unittest.TestCase):
         profile, _, _ = _typical_day_profiles(buildings, weather, {"typical_day_equivalent_days": 1})
         expected = (20.0 - 10.0) / 2.0 - 4.0 * 100.0 / 1000.0 - (-1.0)
         np.testing.assert_allclose(profile["heat_kw"], expected)
+
+    def test_hourly_rcaq_control_closes_the_storage_balance(self) -> None:
+        result = simulate_hourly_rcaq_control(
+            resistance_c_per_kw=2.0,
+            capacitance_kwh_per_c=5.0,
+            solar_aperture_m2=4.0,
+            internal_gains_kw=0.6,
+            outdoor_temperature_c=[0.0, 5.0],
+            solar_radiation_kw_m2=[0.0, 0.1],
+            target_temperature_c=[20.0, 18.0],
+            initial_indoor_temperature_c=18.0,
+        )
+        self.assertEqual(len(result), 2)
+        storage_from_temperature = 5.0 * (
+            result["Indoor end (degC)"] - result["Indoor start (degC)"]
+        )
+        storage_from_balance = (
+            result["Heating power (kW)"]
+            + result["Solar gain (kW)"]
+            + result["Internal gain (kW)"]
+            - result["Envelope heat loss (kW)"]
+        )
+        np.testing.assert_allclose(
+            storage_from_balance, storage_from_temperature
+        )
+        self.assertNotIn("Stored heat change (kWh)", result.columns)
+        self.assertAlmostEqual(result.loc[0, "Heating power (kW)"], 18.4)
+        self.assertAlmostEqual(result.loc[0, "Indoor end (degC)"], 20.0)
+        self.assertEqual(float(result["Heating power (kW)"].min()), 0.0)
 
 
 if __name__ == "__main__":
