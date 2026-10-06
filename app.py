@@ -23,6 +23,7 @@ from src.deploy_runtime import (
 st.set_page_config(
     page_title="SyCoTherm",
     layout="wide",
+    initial_sidebar_state="collapsed",
 )
 
 st.markdown(
@@ -79,6 +80,53 @@ st.markdown(
             padding: 0.6rem 0.85rem;
         }
         .stTabs [data-baseweb="tab"] p { font-size: 1.1rem; }
+    }
+    /* One type family and a restrained palette across the product. */
+    .stApp, .stApp input, .stApp textarea, .stApp button,
+    .stApp [data-testid="stMarkdownContainer"] {
+        font-family: "Segoe UI", Arial, sans-serif;
+    }
+    .stApp { background: #ffffff; color: #203b49; }
+    [data-testid="stSidebar"], [data-testid="stSidebarCollapsedControl"] {
+        display: none;
+    }
+    .block-container { max-width: 1240px; padding-top: 3rem; }
+    .stApp h1, .stApp h2, .stApp h3 { color: #173c4d; font-weight: 600; }
+    .stApp h3 { font-size: 1.5rem; line-height: 1.35; }
+    .brand-header {
+        display: flex; align-items: center; gap: 3rem;
+        padding: 0 0 2rem; margin-bottom: 1rem;
+    }
+    .brand-logo { width: 370px; max-width: 42%; height: auto; flex-shrink: 0; }
+    .brand-copy { max-width: 620px; }
+    .brand-eyebrow { color: #9b6334; font-size: 0.8rem; letter-spacing: 0.15em;
+        text-transform: uppercase; font-weight: 600; }
+    .brand-copy h1 { font-size: clamp(1.8rem, 3vw, 2.65rem); line-height: 1.2;
+        letter-spacing: -0.025em; padding: 0.5rem 0; margin: 0; }
+    .brand-copy p { font-size: 1.05rem; line-height: 1.65; color: #576e79; }
+    .stTabs [data-baseweb="tab-list"] { gap: 0.5rem; padding: 0.45rem;
+        background: #f2f6f7; border: 1px solid #e0e8eb; border-radius: 12px; }
+    .stTabs [data-baseweb="tab"] { height: auto; min-height: 3.3rem;
+        padding: 0.7rem 1.35rem; border-radius: 8px; color: #48616e; }
+    .stTabs [data-baseweb="tab"] [data-testid="stMarkdownContainer"] p,
+    .stTabs [data-baseweb="tab"] p { font-size: 1.15rem !important; font-weight: 600; }
+    .stTabs [data-baseweb="tab"][aria-selected="true"] {
+        background: #173c4d; color: white; }
+    .stTabs [data-baseweb="tab-highlight"], .stTabs [data-baseweb="tab-border"] {
+        display: none;
+    }
+    .stTabs [data-baseweb="tab-panel"] { padding-top: 2rem; }
+    .workflow { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;
+        margin: 1rem 0 1.6rem; }
+    .workflow article { border: 1px solid #e0e8eb; border-radius: 12px; padding: 1.4rem; }
+    .workflow span { font-size: 0.85rem; color: #9b6334; font-weight: 600; }
+    .workflow h4 { margin: 0.7rem 0 0.4rem; color: #173c4d; font-size: 1.1rem; }
+    .workflow p { color: #576e79; font-size: 0.95rem; line-height: 1.6; margin: 0; }
+    @media (max-width: 700px) {
+        .brand-header { flex-direction: column; gap: 0.5rem; align-items: flex-start; }
+        .brand-logo { width: 320px; max-width: 100%; }
+        .workflow { grid-template-columns: 1fr; }
+        .stTabs [data-baseweb="tab"] { padding: 0.6rem 0.75rem; }
     }
     </style>
     """,
@@ -711,20 +759,26 @@ def display_results(run_dir: Path, key_prefix: str | None = None) -> None:
 logo_svg_path = BASE_DIR / "logo.svg"
 logo_path = logo_svg_path if logo_svg_path.exists() else BASE_DIR / "logo.jpg"
 if logo_path.exists():
-    st.image(str(logo_path), width=285)
+    logo_mime = "image/svg+xml" if logo_path.suffix == ".svg" else "image/jpeg"
+    logo_data = base64.b64encode(logo_path.read_bytes()).decode("ascii")
+    logo_html = f'<img class="brand-logo" src="data:{logo_mime};base64,{logo_data}" alt="SyCoTherm logo">'
+else:
+    logo_html = '<div class="brand-logo">SyCoTherm</div>'
 st.markdown(
-    """
-    <div class="sycotherm-hero">
-        <h1>SyCoTherm</h1>
-        <p>A Community Thermal Parameter Synthesizer for Energy System Optimization</p>
+    f"""
+    <div class="brand-header">
+        {logo_html}
+        <div class="brand-copy">
+            <span class="brand-eyebrow">Community energy modelling</span>
+            <h1>Thermal parameters.<br>Community insights.</h1>
+            <p>Synthesize house thermal parameters and explore heating demand
+            for community-level energy system studies.</p>
+        </div>
     </div>
     """,
     unsafe_allow_html=True,
 )
 
-st.sidebar.header("SyCoTherm")
-st.sidebar.caption("Public demo")
-st.sidebar.subheader("Current Setup")
 artifact_root = DEFAULT_ARTIFACT_ROOT
 output_root = DEFAULT_OUTPUT_ROOT
 
@@ -739,54 +793,43 @@ try:
         or model_metadata.get("model_version")
         or "task102b_copula_deploy_v1"
     )
-    st.sidebar.success("Model files loaded")
-    st.sidebar.success("System ready")
-    st.sidebar.info(f"Model version\n\n`{runtime_label}`")
-    st.sidebar.info("Release version\n\n`v2.0 (2026-08)`")
-    st.sidebar.info(
-        f"Supported community size\n\n`Up to {input_schema.get('max_buildings', '-')} buildings`"
-    )
 except Exception as exc:
     artifacts = None
     input_schema = DEFAULT_SCHEMA
-    st.sidebar.error("Model files unavailable")
-    st.sidebar.warning("System not ready")
-    with st.sidebar.expander("Setup details", expanded=False):
+    st.error("The model is currently unavailable. Please try again later.")
+    with st.expander("Setup details", expanded=False):
         st.write(str(exc))
-st.sidebar.caption(
-    "Designed for community-level energy system studies. "
-    "For academic research and demonstration purposes only."
-)
 
 tab_about, tab_submit, tab_load, tab_example, tab_contact = st.tabs(
     ["About", "Submit Case", "Load Results", "Basic Example", "Contact"]
 )
 
 with tab_about:
-    # st.subheader("SyCoTherm online demo")
-    st.subheader("SyCoTherm: A Community Thermal Parameter Synthesizer for Energy System Optimization")
-    # st.write(
-    #     "SyCoTherm: A Community Thermal Parameter Synthesizer for Energy System Optimization"
-    #     # "synthesizes public-demo thermal parameters and community heating profiles from simple "
-    #     # "building/community inputs."
-    # )
-    st.subheader("What SyCoTherm helps with")
+    st.subheader("From building inputs to community heating demand")
+    st.write("Explore how SyCoTherm connects simple building information with thermal modelling.")
     # Previous intro slideshow kept for rollback.
     # display_intro_slideshow()
-    render_intro_video(str(INTRO_DIR / "IntroVideo_muted.mp4"), max_width=760)
-    st.subheader("How SyCoTherm works")
+    render_intro_video(str(INTRO_DIR / "IntroVideo_muted.mp4"), max_width=1040)
+    st.subheader("Your workflow")
     st.markdown(
         """
-1. Submit a case with building or community inputs.
-2. Wait for the online runtime to synthesize thermal parameters and profiles.
-3. Load results using the same Run ID.
-4. Download synthetic thermal parameters and profiles if needed.
+<div class="workflow">
+    <article><span>01 / INPUT</span><h4>Describe your community</h4>
+    <p>Enter construction years and floor areas, or upload your building roster.</p></article>
+    <article><span>02 / GENERATE</span><h4>Create a case</h4>
+    <p>Submit your inputs to synthesize a complete set of community thermal parameters.</p></article>
+    <article><span>03 / EXPLORE</span><h4>Put results to work</h4>
+    <p>Open Load Results with your Run ID to explore profiles and download your results.</p></article>
+</div>
         """
+        , unsafe_allow_html=True
     )
-    st.info(
-        "This standalone demo uses a frozen M0a/Q0 conditional model with joint shrunk-Copula "
-        "residual sampling. EnergyLabel is retained but is not predictive in this version."
-    )
+    st.caption("Research demonstration for community-level studies. Generated heating profiles are simulation proxies, not measured energy use.")
+    with st.expander("Model details and scope", expanded=False):
+        if artifacts is not None:
+            st.write(f"Model version: {runtime_label}")
+            st.write("Supports 1–100 buildings, construction years 1946–2005, and floor areas 76–217 m². E4 selections use Full Monte Carlo automatically outside the 2–50 building range.")
+        st.write("Frozen development model with internal retrospective evidence. EnergyLabel is optional and does not affect RCAQ generation. Outputs do not establish address-level accuracy.")
 
 with tab_submit:
     st.subheader("Submit Case")
@@ -811,7 +854,9 @@ with tab_submit:
     st.caption(
         "E4 rank-LHS is the default representative-community route. "
         "E4 complete-row, Fast LHS, and Full Monte Carlo remain available for comparison. "
-        "The E4 routes support communities of 2-50 buildings."
+        "Submit 1–100 buildings, with construction years 1946–2005 and floor areas "
+        "76–217 m². For E4 selections, cases outside 2–50 buildings automatically use "
+        "Full Monte Carlo."
     )
 
     uploaded_csv = st.file_uploader("Upload community CSV", type=["csv"])
@@ -866,7 +911,14 @@ with tab_submit:
                     input_path.parent.mkdir(parents=True, exist_ok=True)
                     validated_input.to_csv(input_path, index=False)
                     selected_runtime_config = dict(artifacts.get("runtime_config") or {})
-                    selected_runtime_config["sampling_mode"] = selected_sampling_mode
+                    effective_sampling_mode = selected_sampling_mode
+                    if selected_sampling_mode in {"e4_rank_lhs_v1", "e4_complete_row_v1"} and not 2 <= len(validated_input) <= 50:
+                        effective_sampling_mode = "full_mc"
+                        st.info(
+                            f"This case contains {len(validated_input)} buildings. "
+                            "Using Full Monte Carlo because E4 supports 2–50 buildings."
+                        )
+                    selected_runtime_config["sampling_mode"] = effective_sampling_mode
 
                     result = run_deployment_synthesis(
                         validated_input,
