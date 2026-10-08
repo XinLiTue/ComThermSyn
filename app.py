@@ -20,6 +20,7 @@ from src.deploy_runtime import (
     simulate_hourly_rcaq_control,
     validate_community_input,
 )
+from src.real_case_io import load_real_case_result
 
 
 # Presentation names are separate from the frozen runtime sampling identifiers.
@@ -196,6 +197,7 @@ BASE_DIR = Path(__file__).resolve().parent
 DEFAULT_ARTIFACT_ROOT = BASE_DIR / "artifacts_public"
 DEFAULT_OUTPUT_ROOT = BASE_DIR / "streamlit_demo_outputs" / "jobs"
 INTRO_DIR = BASE_DIR / "Intro"
+BALLUM_RESULT_PATH = BASE_DIR / "real_cases" / "ballum_real_case_result.json"
 INTRO_SLIDE_COUNT = 6
 INTRO_SCENES = {
     1: "Scene 1 - Modeling challenge",
@@ -711,6 +713,165 @@ def render_basic_use_case() -> None:
     )
 
 
+def render_ballum_real_case() -> None:
+    try:
+        result = load_real_case_result(BALLUM_RESULT_PATH)
+    except (OSError, ValueError, json.JSONDecodeError) as exc:
+        st.error("The Ballum aggregate result is currently unavailable.")
+        with st.expander("Setup details", expanded=False):
+            st.write(str(exc))
+        return
+
+    case = result["case"]
+    comparison = result["comparison"]
+    method = result["method"]
+    monthly = pd.DataFrame(result["monthly_results"])
+
+    st.subheader("Real case: Ballum, Ameland")
+    st.markdown(
+        "Ballum is a village on Ameland, an island in the northern Netherlands. "
+        "SyCoTherm models its community space-heating demand using public building "
+        f"information and {case['weather_year']} hourly weather observations from "
+        f"{case['weather_station']}. "
+        "TNO's [Warmteprofielengenerator]"
+        f"({comparison['reference_url']}) has also modelled Ballum, "
+        "providing an independent example for comparison."
+    )
+    # st.caption(
+    #     "Both are modelled scenarios with different inputs and assumptions; "
+    #     "this is not a measured-energy validation."
+    # )
+
+    st.markdown("#### Monthly heating energy and outdoor temperature")
+    energy_temperature_figure = make_subplots(specs=[[{"secondary_y": True}]])
+    energy_temperature_figure.add_trace(
+        go.Bar(
+            x=monthly["month"],
+            y=monthly["heating_energy_mwh_th"],
+            name="Heating energy",
+            marker_color="#173c4d",
+            opacity=0.88,
+            hovertemplate="%{x}<br>%{y:.1f} MWhₜₕ<extra></extra>",
+        ),
+        secondary_y=False,
+    )
+    energy_temperature_figure.add_trace(
+        go.Scatter(
+            x=monthly["month"],
+            y=monthly["min_outdoor_temperature_c"],
+            name="Monthly temperature range",
+            showlegend=False,
+            mode="lines",
+            line={"color": "rgba(183, 116, 60, 0.18)", "width": 1},
+            hovertemplate="%{x}<br>Minimum %{y:.1f} °C<extra></extra>",
+        ),
+        secondary_y=True,
+    )
+    energy_temperature_figure.add_trace(
+        go.Scatter(
+            x=monthly["month"],
+            y=monthly["max_outdoor_temperature_c"],
+            name="Min–max temperature",
+            mode="lines",
+            line={"color": "rgba(183, 116, 60, 0.18)", "width": 1},
+            fill="tonexty",
+            fillcolor="rgba(183, 116, 60, 0.14)",
+            hovertemplate="%{x}<br>Maximum %{y:.1f} °C<extra></extra>",
+        ),
+        secondary_y=True,
+    )
+    energy_temperature_figure.add_trace(
+        go.Scatter(
+            x=monthly["month"],
+            y=monthly["mean_outdoor_temperature_c"],
+            name="Mean outdoor temperature",
+            mode="lines+markers",
+            line={"color": "#b7743c", "width": 3},
+            marker={"color": "#b7743c", "size": 7},
+            hovertemplate="%{x}<br>Mean %{y:.1f} °C<extra></extra>",
+        ),
+        secondary_y=True,
+    )
+    energy_temperature_figure.update_layout(
+        font={"family": "Segoe UI, Arial, sans-serif", "color": "#203b49"},
+        plot_bgcolor="#ffffff",
+        paper_bgcolor="#ffffff",
+        legend={"orientation": "h", "y": 1.16, "x": 0},
+        margin={"l": 55, "r": 60, "t": 80, "b": 45},
+        hovermode="x unified",
+    )
+    energy_temperature_figure.update_xaxes(title_text="Month")
+    energy_temperature_figure.update_yaxes(
+        title_text="Heating energy (MWhₜₕ)", gridcolor="#e2e9ec", secondary_y=False
+    )
+    energy_temperature_figure.update_yaxes(
+        title_text="Outdoor temperature (°C)", showgrid=False, secondary_y=True
+    )
+    st.plotly_chart(energy_temperature_figure, use_container_width=True)
+    st.caption("Heating is switched off in June–August in this example.")
+
+    st.markdown("#### Monthly electrified heating energy")
+    electricity_figure = go.Figure(
+        go.Bar(
+            x=monthly["month"],
+            y=monthly["hp_electricity_mwh_e"],
+            name="Heat-pump electricity",
+            marker_color="#b7743c",
+            hovertemplate="%{x}<br>%{y:.1f} MWhₑ<extra></extra>",
+        )
+    )
+    electricity_figure.update_layout(
+        xaxis_title="Month",
+        yaxis_title="Heat-pump electricity (MWhₑ)",
+        font={"family": "Segoe UI, Arial, sans-serif", "color": "#203b49"},
+        plot_bgcolor="#ffffff",
+        paper_bgcolor="#ffffff",
+        margin={"l": 55, "r": 30, "t": 35, "b": 45},
+    )
+    electricity_figure.update_yaxes(gridcolor="#e2e9ec")
+    st.plotly_chart(electricity_figure, use_container_width=True)
+    with st.expander("Monthly result table", expanded=False):
+        monthly_table = monthly[
+            [
+                "month",
+                "heating_energy_mwh_th",
+                "hp_electricity_mwh_e",
+                "mean_outdoor_temperature_c",
+                "min_outdoor_temperature_c",
+                "max_outdoor_temperature_c",
+            ]
+        ].rename(
+            columns={
+                "month": "Month",
+                "heating_energy_mwh_th": "Heating energy (MWhₜₕ)",
+                "hp_electricity_mwh_e": "HP electricity (MWhₑ)",
+                "mean_outdoor_temperature_c": "Mean outdoor temperature (°C)",
+                "min_outdoor_temperature_c": "Minimum outdoor temperature (°C)",
+                "max_outdoor_temperature_c": "Maximum outdoor temperature (°C)",
+            }
+        )
+        st.dataframe(monthly_table, use_container_width=True, hide_index=True)
+
+    st.caption(
+        "Electricity uses P_HP = Q_heat / COP, with COP = 20.3595 − 3.2061 × "
+        "log₂(1 + 40 − T_out). For related modelling details, see "
+        f"[the paper]({method['research_url']})."
+    )
+
+    st.markdown("#### Conclusion")
+    st.markdown(
+        "After normalising annual space-heating energy to the same number of "
+        "residential units, SyCoTherm and TNO differ by only "
+        f"**{comparison['normalized_difference_percent']:.2f}% relative to TNO**."
+    )
+    # st.caption(
+    #     "This is a scale-adjusted comparison, not a like-for-like validation: "
+    #     f"the weather years differ ({case['weather_year']} versus "
+    #     f"{comparison['reference_weather_year']}), as do the building selections "
+    #     "and model assumptions."
+    # )
+
+
 def plot_typical_day_profile(profile_df: pd.DataFrame | None, key_prefix: str) -> None:
     filtered_df, time_col, demand_col = filter_profile(profile_df, key_prefix)
     if filtered_df is None or time_col is None or demand_col is None:
@@ -895,8 +1056,8 @@ except Exception as exc:
     with st.expander("Setup details", expanded=False):
         st.write(str(exc))
 
-tab_about, tab_submit, tab_load, tab_example, tab_contact = st.tabs(
-    ["About", "Submit Case", "Load Results", "Basic Example", "Contact"]
+tab_about, tab_submit, tab_load, tab_example, tab_real_case, tab_contact = st.tabs(
+    ["About", "Submit Case", "Load Results", "Basic Example", "Real Case", "Contact"]
 )
 
 with tab_about:
@@ -1062,6 +1223,9 @@ with tab_load:
 
 with tab_example:
     render_basic_use_case()
+
+with tab_real_case:
+    render_ballum_real_case()
 
 with tab_contact:
     st.subheader("Contact")

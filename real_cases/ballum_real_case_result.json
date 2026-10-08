@@ -1,0 +1,212 @@
+{
+  "schema_version": "1.0",
+  "case": {
+    "name": "Ballum real-community test",
+    "location": "Ballum, Ameland, Netherlands",
+    "weather_year": 2025,
+    "weather_station": "KNMI 251 Hoorn (Terschelling)",
+    "modelled_residential_units": 212,
+    "bag_buildings": 192,
+    "total_floor_area_m2": 29290,
+    "scope_note": "212 residential BAG units/model objects corresponding to 192 BAG building IDs; only public aggregate results are displayed."
+  },
+  "building_year_distribution": [
+    {
+      "class": "< 1946",
+      "number": 60
+    },
+    {
+      "class": "1946 - 1964",
+      "number": 26
+    },
+    {
+      "class": "1965 - 1974",
+      "number": 20
+    },
+    {
+      "class": "1975 - 1991",
+      "number": 29
+    },
+    {
+      "class": "1992 - 2005",
+      "number": 38
+    },
+    {
+      "class": "2006 - 2014",
+      "number": 11
+    },
+    {
+      "class": "> 2014",
+      "number": 28
+    }
+  ],
+  "floor_area_distribution_m2": [
+    {
+      "class": "< 50",
+      "number": 16
+    },
+    {
+      "class": "50 - 74",
+      "number": 11
+    },
+    {
+      "class": "75 - 99",
+      "number": 53
+    },
+    {
+      "class": "100 - 149",
+      "number": 61
+    },
+    {
+      "class": "150 - 199",
+      "number": 41
+    },
+    {
+      "class": ">= 200",
+      "number": 30
+    }
+  ],
+  "monthly_results": [
+    {
+      "month": "Jan",
+      "month_number": 1,
+      "heating_energy_mwh_th": 473.898,
+      "hp_electricity_mwh_e": 131.036,
+      "mean_outdoor_temperature_c": 4.19,
+      "min_outdoor_temperature_c": -1.5,
+      "max_outdoor_temperature_c": 9.3
+    },
+    {
+      "month": "Feb",
+      "month_number": 2,
+      "heating_energy_mwh_th": 437.892,
+      "hp_electricity_mwh_e": 126.444,
+      "mean_outdoor_temperature_c": 3.13,
+      "min_outdoor_temperature_c": -3.0,
+      "max_outdoor_temperature_c": 9.8
+    },
+    {
+      "month": "Mar",
+      "month_number": 3,
+      "heating_energy_mwh_th": 337.219,
+      "hp_electricity_mwh_e": 89.232,
+      "mean_outdoor_temperature_c": 6.5,
+      "min_outdoor_temperature_c": -1.1,
+      "max_outdoor_temperature_c": 16.1
+    },
+    {
+      "month": "Apr",
+      "month_number": 4,
+      "heating_energy_mwh_th": 238.418,
+      "hp_electricity_mwh_e": 57.778,
+      "mean_outdoor_temperature_c": 9.58,
+      "min_outdoor_temperature_c": 0.7,
+      "max_outdoor_temperature_c": 20.3
+    },
+    {
+      "month": "May",
+      "month_number": 5,
+      "heating_energy_mwh_th": 150.222,
+      "hp_electricity_mwh_e": 33.706,
+      "mean_outdoor_temperature_c": 12.35,
+      "min_outdoor_temperature_c": 3.9,
+      "max_outdoor_temperature_c": 23.0
+    },
+    {
+      "month": "Jun",
+      "month_number": 6,
+      "heating_energy_mwh_th": 0.0,
+      "hp_electricity_mwh_e": 0.0,
+      "mean_outdoor_temperature_c": 16.62,
+      "min_outdoor_temperature_c": 8.2,
+      "max_outdoor_temperature_c": 27.4
+    },
+    {
+      "month": "Jul",
+      "month_number": 7,
+      "heating_energy_mwh_th": 0.0,
+      "hp_electricity_mwh_e": 0.0,
+      "mean_outdoor_temperature_c": 18.52,
+      "min_outdoor_temperature_c": 10.2,
+      "max_outdoor_temperature_c": 30.9
+    },
+    {
+      "month": "Aug",
+      "month_number": 8,
+      "heating_energy_mwh_th": 0.0,
+      "hp_electricity_mwh_e": 0.0,
+      "mean_outdoor_temperature_c": 17.86,
+      "min_outdoor_temperature_c": 8.9,
+      "max_outdoor_temperature_c": 28.1
+    },
+    {
+      "month": "Sep",
+      "month_number": 9,
+      "heating_energy_mwh_th": 75.791,
+      "hp_electricity_mwh_e": 15.854,
+      "mean_outdoor_temperature_c": 15.42,
+      "min_outdoor_temperature_c": 6.7,
+      "max_outdoor_temperature_c": 24.2
+    },
+    {
+      "month": "Oct",
+      "month_number": 10,
+      "heating_energy_mwh_th": 204.253,
+      "hp_electricity_mwh_e": 43.167,
+      "mean_outdoor_temperature_c": 12.36,
+      "min_outdoor_temperature_c": 7.3,
+      "max_outdoor_temperature_c": 16.8
+    },
+    {
+      "month": "Nov",
+      "month_number": 11,
+      "heating_energy_mwh_th": 342.052,
+      "hp_electricity_mwh_e": 84.99,
+      "mean_outdoor_temperature_c": 7.94,
+      "min_outdoor_temperature_c": -2.5,
+      "max_outdoor_temperature_c": 14.1
+    },
+    {
+      "month": "Dec",
+      "month_number": 12,
+      "heating_energy_mwh_th": 412.977,
+      "hp_electricity_mwh_e": 107.04,
+      "mean_outdoor_temperature_c": 6.29,
+      "min_outdoor_temperature_c": -2.3,
+      "max_outdoor_temperature_c": 11.6
+    }
+  ],
+  "annual_results": {
+    "heating_energy_mwh_th": 2672.724,
+    "hp_electricity_mwh_e": 689.247,
+    "seasonal_performance_factor": 3.878,
+    "peak_heating_kw": 982.096,
+    "peak_hp_electric_kw": 343.869
+  },
+  "comparison": {
+    "reference_name": "TNO Warmteprofielengenerator Ballum result",
+    "reference_url": "https://www.warmteprofielengenerator.nl/results/6045",
+    "reference_weather_year": 2019,
+    "reference_residential_units": 177,
+    "reference_annual_heating_mwh_th": 2180.089,
+    "sycotherm_normalized_heating_mwh_th": 2231.472,
+    "normalized_difference_percent": 2.36
+  },
+  "method": {
+    "heating_gate": "Heating is off in June-August. In October-February it is enabled only when daily mean outdoor temperature is below 17 degC; in March-May and September only when it is below 15 degC.",
+    "cop_formula": "COP = 20.3595 - 3.2061 * log2(1 + 40 - T_out)",
+    "electricity_formula": "P_HP = Q_heat / COP",
+    "cop_note": "The air-to-water heat-pump proxy uses a fixed 40 degC supply temperature. It is a simplified fit, not a manufacturer performance map.",
+    "research_note": "The electrified-load interpretation is shown as a transparent modelling example and is noted alongside Li et al. (2025), Hybrid Heat Pump Flexibility Allocation: Quantified Thermal Comfort-Based Congestion Management.",
+    "research_url": "https://ieeexplore.ieee.org/abstract/document/11169153/"
+  },
+  "provenance": {
+    "building_source": "BAG/CBS-derived Ballum case metadata; aggregate display only",
+    "weather_source": "KNMI hourly observations, station 251, 2025",
+    "generated_from": [
+      "Project/Data/CommunityCases/Ballum/internal/ballum_building_metadata.csv",
+      "Project/Data/CommunityCases/Ballum/aggregate_results/daily_mean_temperature_gate_hourly.csv",
+      "Project/Data/CommunityCases/Ballum/internal/tno_ballum_job_6045_results.json"
+    ]
+  }
+}
