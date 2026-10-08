@@ -8,7 +8,9 @@ from typing import Any
 
 import pandas as pd
 import plotly.express as px
+import plotly.graph_objects as go
 import streamlit as st
+from plotly.subplots import make_subplots
 
 from src.artifact_io import load_deployment_artifacts, validate_public_artifact_safety
 from src.deploy_runtime import (
@@ -18,6 +20,33 @@ from src.deploy_runtime import (
     simulate_hourly_rcaq_control,
     validate_community_input,
 )
+
+
+# Presentation names are separate from the frozen runtime sampling identifiers.
+SAMPLING_METHODS = {
+    "lhs_fast": (
+        "Fast candidate-LHS",
+        "Stratifies the residual probability range for each house across candidate "
+        "communities and returns the most typical community. This is the web default "
+        "and supports communities of up to 100 buildings.",
+    ),
+    "e4_rank_lhs_v1": (
+        "Community rank-LHS",
+        "Stratifies each residual distribution across the houses within one community "
+        "while retaining the pilot rank dependence.",
+    ),
+    "e4_complete_row_v1": (
+        "Empirical residuals",
+        "Uses complete pilot residual vectors without interval stratification or "
+        "cross-variable recombination and returns the generated community nearest "
+        "the robust centre.",
+    ),
+    "full_mc": (
+        "Copula Monte Carlo",
+        "Draws joint residual vectors from the fitted Copula and returns the generated "
+        "community nearest the robust centre.",
+    ),
+}
 
 
 st.set_page_config(
@@ -109,9 +138,17 @@ st.markdown(
     .stTabs [data-baseweb="tab"] { height: auto; min-height: 3.3rem;
         padding: 0.7rem 1.35rem; border-radius: 8px; color: #48616e; }
     .stTabs [data-baseweb="tab"] [data-testid="stMarkdownContainer"] p,
-    .stTabs [data-baseweb="tab"] p { font-size: 1.15rem !important; font-weight: 600; }
+    .stTabs [data-baseweb="tab"] p {
+        font-size: 1.15rem !important;
+        font-weight: 600;
+        color: #203b49 !important;
+    }
     .stTabs [data-baseweb="tab"][aria-selected="true"] {
         background: #173c4d; color: white; }
+    .stTabs [data-baseweb="tab"][aria-selected="true"] [data-testid="stMarkdownContainer"] p,
+    .stTabs [data-baseweb="tab"][aria-selected="true"] p {
+        color: #ffffff !important;
+    }
     .stTabs [data-baseweb="tab-highlight"], .stTabs [data-baseweb="tab-border"] {
         display: none;
     }
@@ -122,6 +159,16 @@ st.markdown(
     .workflow span { font-size: 0.85rem; color: #9b6334; font-weight: 600; }
     .workflow h4 { margin: 0.7rem 0 0.4rem; color: #173c4d; font-size: 1.1rem; }
     .workflow p { color: #576e79; font-size: 0.95rem; line-height: 1.6; margin: 0; }
+    .model-source {
+        margin: 0.6rem 0 0.4rem;
+        padding: 0.7rem 0.95rem;
+        border-left: 3px solid #b7743c;
+        background: #f5f8f8;
+        color: #294b5b;
+        font-size: 1.08rem;
+        line-height: 1.5;
+    }
+    .model-source a { color: #145b77; font-weight: 600; }
     @media (max-width: 700px) {
         .brand-header { flex-direction: column; gap: 0.5rem; align-items: flex-start; }
         .brand-logo { width: 320px; max-width: 100%; }
@@ -582,11 +629,57 @@ def render_basic_use_case() -> None:
     )
     st.plotly_chart(temperature_figure, use_container_width=True)
 
-    heating_figure = px.bar(
-        example_df,
-        x="Hour",
-        y="Heating power (kW)",
+    cop = st.number_input(
+        "Heat pump COP",
+        min_value=0.1,
+        value=3.0,
+        step=0.1,
+        format="%.1f",
+        key="example_cop",
+        help="Constant illustrative COP. Electricity power equals heating power divided by COP.",
+    )
+    example_df["Electricity power (kW)"] = example_df["Heating power (kW)"] / cop
+    heating_figure = make_subplots(specs=[[{"secondary_y": True}]])
+    heating_figure.add_trace(
+        go.Bar(
+            x=example_df["Hour"],
+            y=example_df["Heating power (kW)"],
+            name="Heating power",
+            marker_color="#173c4d",
+            opacity=0.85,
+        ),
+        secondary_y=False,
+    )
+    heating_figure.add_trace(
+        go.Scatter(
+            x=example_df["Hour"],
+            y=example_df["Electricity power (kW)"],
+            name="Electricity power",
+            mode="lines+markers",
+            line={"color": "#b7743c", "width": 3},
+            marker={"color": "#b7743c", "size": 6},
+        ),
+        secondary_y=True,
+    )
+    heating_figure.update_layout(
         title="Hourly heating-control points",
+        font={"family": "Segoe UI, Arial, sans-serif", "color": "#203b49"},
+        plot_bgcolor="#ffffff",
+        paper_bgcolor="#ffffff",
+        legend={"orientation": "h", "y": 1.12, "x": 0},
+        margin={"l": 55, "r": 60, "t": 90, "b": 50},
+        hovermode="x unified",
+    )
+    heating_figure.update_xaxes(title_text="Hour", dtick=2)
+    heating_figure.update_yaxes(
+        title_text="Heating power (kW)",
+        gridcolor="#e2e9ec",
+        secondary_y=False,
+    )
+    heating_figure.update_yaxes(
+        title_text="Electricity power (kW)",
+        showgrid=False,
+        secondary_y=True,
     )
     st.plotly_chart(heating_figure, use_container_width=True)
 
@@ -676,10 +769,9 @@ def display_results(run_dir: Path, key_prefix: str | None = None) -> None:
         st.warning(f"No runtime outputs found in `{run_dir}`.")
         return
 
-    st.subheader("Runtime summary")
-    col_a, col_b = st.columns(2)
-    col_a.metric("payload_type", manifest.get("payload_type", "-"))
-    col_b.metric("synthesis_mode", manifest.get("synthesis_mode", "-"))
+    sampling_mode = str(manifest.get("sampling_mode", ""))
+    if sampling_mode in SAMPLING_METHODS:
+        st.markdown(f"**Sampling method:** {SAMPLING_METHODS[sampling_mode][0]}")
 
     total_annual, total_unit = metric_lookup(annual_df, "total_annual_heating_energy")
     peak_heat, peak_unit = metric_lookup(dynamic_df, "peak_heat_demand")
@@ -714,7 +806,6 @@ def display_results(run_dir: Path, key_prefix: str | None = None) -> None:
                 "C",
                 "A",
                 "Qint",
-                "tau_hours",
                 "C_conditional_center",
                 "C_residual_multiplier",
                 "residual_quantile_C",
@@ -786,13 +877,6 @@ try:
     artifacts = cached_artifacts(str(artifact_root))
     input_schema = artifacts.get("input_schema") or DEFAULT_SCHEMA
     runtime_config = artifacts.get("runtime_config") or {}
-    model_metadata = artifacts.get("model_metadata") or {}
-    deployment_payload = artifacts.get("deployment_model_payload") or {}
-    runtime_label = (
-        deployment_payload.get("payload_type")
-        or model_metadata.get("model_version")
-        or "task102b_copula_deploy_v1"
-    )
 except Exception as exc:
     artifacts = None
     input_schema = DEFAULT_SCHEMA
@@ -827,36 +911,36 @@ with tab_about:
     st.caption("Research demonstration for community-level studies. Generated heating profiles are simulation proxies, not measured energy use.")
     with st.expander("Model details and scope", expanded=False):
         if artifacts is not None:
-            st.write(f"Model version: {runtime_label}")
-            st.write("Supports 1–100 buildings, construction years 1946–2005, and floor areas 76–217 m². E4 selections use Full Monte Carlo automatically outside the 2–50 building range.")
+            st.write("Supports 1–100 buildings, construction years 1946–2005, and floor areas 76–217 m². Community rank-LHS and Empirical residuals selections use Copula Monte Carlo automatically outside the 2–50 building range.")
         st.write("Frozen development model with internal retrospective evidence. EnergyLabel is optional and does not affect RCAQ generation. Outputs do not establish address-level accuracy.")
+        for method_name, method_description in SAMPLING_METHODS.values():
+            st.markdown(f"**{method_name}** — {method_description}")
+    st.markdown(
+        """
+<div class="model-source">
+    Measured-data source: DACS-HW projetct. See the
+    <a href="https://kennisdelen.rvo.nl/groups/view/1434df6b-d9c4-4d87-8c73-36834399abeb/kennis-en-dataplatform-individuele-technieken-kite/page/view/6b6b0b0c-5d15-4b8d-9f02-2bc84a886715/dacs-hw" target="_blank" rel="noopener noreferrer">RVO/KITE DACS-HW page</a>.
+</div>
+        """,
+        unsafe_allow_html=True,
+    )
 
 with tab_submit:
     st.subheader("Submit Case")
     run_id_input = st.text_input("Run ID", value="CPN8_001")
     overwrite = st.checkbox("overwrite existing run", value=False)
-    sampling_label = st.selectbox(
+    selected_sampling_mode = st.selectbox(
         "Sampling mode",
-        [
-            "E4 rank-LHS (representative community, default)",
-            "E4 complete-row (empirical residual combinations)",
-            "Fast LHS (up to 3 evaluated from 16 designs)",
-            "Full Monte Carlo (100 communities)",
-        ],
+        list(SAMPLING_METHODS),
+        format_func=lambda mode: SAMPLING_METHODS[mode][0]
+        + (" (default)" if mode == "lhs_fast" else ""),
         index=0,
     )
-    selected_sampling_mode = {
-        "E4 rank-LHS (representative community, default)": "e4_rank_lhs_v1",
-        "E4 complete-row (empirical residual combinations)": "e4_complete_row_v1",
-        "Fast LHS (up to 3 evaluated from 16 designs)": "lhs_fast",
-        "Full Monte Carlo (100 communities)": "full_mc",
-    }[sampling_label]
+    st.write(SAMPLING_METHODS[selected_sampling_mode][1])
     st.caption(
-        "E4 rank-LHS is the default representative-community route. "
-        "E4 complete-row, Fast LHS, and Full Monte Carlo remain available for comparison. "
         "Submit 1–100 buildings, with construction years 1946–2005 and floor areas "
-        "76–217 m². For E4 selections, cases outside 2–50 buildings automatically use "
-        "Full Monte Carlo."
+        "76–217 m². For Community rank-LHS and Empirical residuals selections, "
+        "cases outside 2–50 buildings automatically use Copula Monte Carlo."
     )
 
     uploaded_csv = st.file_uploader("Upload community CSV", type=["csv"])
@@ -916,7 +1000,8 @@ with tab_submit:
                         effective_sampling_mode = "full_mc"
                         st.info(
                             f"This case contains {len(validated_input)} buildings. "
-                            "Using Full Monte Carlo because E4 supports 2–50 buildings."
+                            "Using Copula Monte Carlo because Community rank-LHS "
+                            "and Empirical residuals support 2–50 buildings."
                         )
                     selected_runtime_config["sampling_mode"] = effective_sampling_mode
 
