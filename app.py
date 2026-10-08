@@ -133,20 +133,28 @@ st.markdown(
     .brand-copy h1 { font-size: clamp(1.8rem, 3vw, 2.65rem); line-height: 1.2;
         letter-spacing: -0.025em; padding: 0.5rem 0; margin: 0; }
     .brand-copy p { font-size: 1.05rem; line-height: 1.65; color: #576e79; }
-    .stTabs [data-baseweb="tab-list"] { gap: 0.5rem; padding: 0.45rem;
-        background: #f2f6f7; border: 1px solid #e0e8eb; border-radius: 12px; }
-    .stTabs [data-baseweb="tab"] { height: auto; min-height: 3.3rem;
-        padding: 0.7rem 1.35rem; border-radius: 8px; color: #48616e; }
-    .stTabs [data-baseweb="tab"] [data-testid="stMarkdownContainer"] p,
-    .stTabs [data-baseweb="tab"] p {
-        font-size: 1.15rem !important;
-        font-weight: 600;
-        color: #203b49 !important;
+    :is(.stTabs, [data-testid="stTabs"]) [role="tablist"] {
+        gap: 0.5rem; padding: 0.45rem;
+        background: #f2f6f7 !important;
+        border: 1px solid #e0e8eb;
+        border-radius: 12px;
     }
-    .stTabs [data-baseweb="tab"][aria-selected="true"] {
-        background: #173c4d; color: white; }
-    .stTabs [data-baseweb="tab"][aria-selected="true"] [data-testid="stMarkdownContainer"] p,
-    .stTabs [data-baseweb="tab"][aria-selected="true"] p {
+    :is(.stTabs, [data-testid="stTabs"]) [role="tab"] {
+        height: auto; min-height: 3.3rem;
+        padding: 0.7rem 1.35rem;
+        border-radius: 8px;
+        background: #f2f6f7 !important;
+        color: #203b49 !important;
+        font-size: 1.2rem !important;
+        font-weight: 700 !important;
+    }
+    :is(.stTabs, [data-testid="stTabs"]) [role="tab"] * {
+        color: inherit !important;
+        font-size: inherit !important;
+        font-weight: inherit !important;
+    }
+    :is(.stTabs, [data-testid="stTabs"]) [role="tab"][aria-selected="true"] {
+        background: #173c4d !important;
         color: #ffffff !important;
     }
     .stTabs [data-baseweb="tab-highlight"], .stTabs [data-baseweb="tab-border"] {
@@ -173,7 +181,10 @@ st.markdown(
         .brand-header { flex-direction: column; gap: 0.5rem; align-items: flex-start; }
         .brand-logo { width: 320px; max-width: 100%; }
         .workflow { grid-template-columns: 1fr; }
-        .stTabs [data-baseweb="tab"] { padding: 0.6rem 0.75rem; }
+        :is(.stTabs, [data-testid="stTabs"]) [role="tab"] {
+            padding: 0.6rem 0.75rem;
+            font-size: 1.12rem !important;
+        }
     }
     </style>
     """,
