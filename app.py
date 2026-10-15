@@ -254,22 +254,11 @@ def safe_run_id(raw_run_id: str) -> str:
 
 
 def default_input_table(schema: dict[str, Any]) -> pd.DataFrame:
-    allowed_labels = schema.get("allowed_energy_labels") or ["A", "B", "C"]
     return pd.DataFrame(
         [
-            {
-                "building_id": "building_1",
-                "year": 1985,
-                "Area": 95.0,
-                "EnergyLabel": allowed_labels[2] if len(allowed_labels) > 2 else allowed_labels[0],
-            },
-            {
-                "building_id": "building_2",
-                "year": 2001,
-                "Area": 120.0,
-                "EnergyLabel": allowed_labels[1] if len(allowed_labels) > 1 else allowed_labels[0],
-            },
-            {"building_id": "building_3", "year": 1971, "Area": 82.0, "EnergyLabel": allowed_labels[0]},
+            {"building_id": "building_1", "year": 1985, "Area": 95.0},
+            {"building_id": "building_2", "year": 2001, "Area": 120.0},
+            {"building_id": "building_3", "year": 1971, "Area": 82.0},
         ]
     )
 
@@ -277,7 +266,7 @@ def default_input_table(schema: dict[str, Any]) -> pd.DataFrame:
 def schema_columns(schema: dict[str, Any]) -> list[str]:
     columns = list(schema.get("optional_columns") or [])
     for column in schema.get("required_columns") or []:
-        if column not in columns:
+        if column != "EnergyLabel" and column not in columns:
             columns.append(column)
     return columns
 
@@ -426,7 +415,12 @@ def result_paths(run_dir: Path) -> dict[str, Path]:
 
 def load_result_tables(run_dir: Path) -> dict[str, pd.DataFrame | None]:
     paths = result_paths(run_dir)
-    return {name: load_csv(path) for name, path in paths.items()}
+    tables = {name: load_csv(path) for name, path in paths.items()}
+    if tables["synthetic"] is not None:
+        tables["synthetic"] = tables["synthetic"].drop(
+            columns=["EnergyLabel", "energy_label_effect_used"], errors="ignore"
+        )
+    return tables
 
 
 def scenario_column(profile_df: pd.DataFrame | None) -> str | None:
@@ -972,7 +966,6 @@ def display_results(run_dir: Path, key_prefix: str | None = None) -> None:
                 "year",
                 "period",
                 "Area",
-                "EnergyLabel",
                 "support_level",
                 "R",
                 "C",
@@ -1084,7 +1077,7 @@ with tab_about:
     with st.expander("Model details and scope", expanded=False):
         if artifacts is not None:
             st.write("Supports 1–100 buildings, construction years 1946–2005, and floor areas 76–217 m². Community rank-LHS and Empirical residuals selections use Copula Monte Carlo automatically outside the 2–50 building range.")
-        st.write("Frozen development model with internal retrospective evidence. EnergyLabel is optional and does not affect RCAQ generation. Outputs do not establish address-level accuracy.")
+        st.write("Frozen development model with internal retrospective evidence. Outputs do not establish address-level accuracy.")
         for method_name, method_description in SAMPLING_METHODS.values():
             st.markdown(f"**{method_name}** — {method_description}")
     st.markdown(
@@ -1130,10 +1123,6 @@ with tab_submit:
         if column not in input_df.columns:
             input_df[column] = None
     st.markdown("**Community input table**")
-    st.caption(
-        "EnergyLabel is optional in this web form. Blank or missing values are saved as "
-        "`unknown` and do not affect RCAQ generation in the current frozen model."
-    )
     editor_df = st.data_editor(
         input_df[columns],
         num_rows="dynamic",
@@ -1165,7 +1154,7 @@ with tab_submit:
                     )
                     input_path = run_dir / "inputs" / "community_input.csv"
                     input_path.parent.mkdir(parents=True, exist_ok=True)
-                    validated_input.to_csv(input_path, index=False)
+                    editor_df.to_csv(input_path, index=False)
                     selected_runtime_config = dict(artifacts.get("runtime_config") or {})
                     effective_sampling_mode = selected_sampling_mode
                     if selected_sampling_mode in {"e4_rank_lhs_v1", "e4_complete_row_v1"} and not 2 <= len(validated_input) <= 50:

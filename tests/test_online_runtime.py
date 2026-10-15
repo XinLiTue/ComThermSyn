@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -16,6 +17,7 @@ from src.artifact_io import load_deployment_artifacts
 from src.copula_runtime import generate_candidate_communities
 from src.deploy_runtime import (
     _typical_day_profiles,
+    build_streamlit_output_package,
     calculate_heating_power_kw,
     fill_optional_energy_labels,
     run_deployment_synthesis,
@@ -156,6 +158,23 @@ class OnlineRuntimeTests(unittest.TestCase):
             input_schema=self.artifacts["input_schema"],
         )
         self.assertEqual(validated_blank["EnergyLabel"].tolist(), ["unknown"] * 3)
+
+    def test_streamlit_package_hides_internal_label_field(self) -> None:
+        result = run_deployment_synthesis(sample_roster(), artifacts=self.artifacts)
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            run_dir = Path(temporary_directory)
+            manifest = build_streamlit_output_package(result, run_dir)
+            for path in (
+                run_dir / "inputs" / "community_input_validated.csv",
+                run_dir / "results" / "generated_building_parameters.csv",
+            ):
+                self.assertFalse(
+                    any("energylabel" in column.lower() or "energy_label" in column.lower()
+                        for column in pd.read_csv(path).columns)
+                )
+            self.assertNotIn("energylabel", str(manifest).lower())
+            self.assertNotIn("energy_label", str(manifest).lower())
+            self.assertNotIn("energy_label_effect_used", manifest)
 
     def test_hierarchical_seed_keeps_existing_buildings_stable(self) -> None:
         roster = sample_roster()

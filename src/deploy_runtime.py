@@ -296,7 +296,6 @@ def run_deployment_synthesis(
     support_counts = cleaned["support_level"].value_counts().to_dict()
     warnings = [
         "Development candidate only: no address-level, population, privacy, or measured-energy claim.",
-        "EnergyLabel is preserved in output but does not alter RCAQ in this frozen model.",
         "Annual energy and peak values are typical-weather heating-demand proxies.",
     ]
     if selection.get("acceptance_fallback_used"):
@@ -330,8 +329,12 @@ def build_streamlit_output_package(result: dict[str, Any], run_dir: Path) -> dic
     inputs_dir = run_dir / "inputs"
     results_dir.mkdir(parents=True, exist_ok=True)
     inputs_dir.mkdir(parents=True, exist_ok=True)
-    result["cleaned_input_df"].to_csv(inputs_dir / "community_input_validated.csv", index=False)
-    result["generated_building_parameters_df"].to_csv(
+    result["cleaned_input_df"].drop(columns="EnergyLabel", errors="ignore").to_csv(
+        inputs_dir / "community_input_validated.csv", index=False
+    )
+    result["generated_building_parameters_df"].drop(
+        columns=["EnergyLabel", "energy_label_effect_used"], errors="ignore"
+    ).to_csv(
         results_dir / "generated_building_parameters.csv", index=False
     )
     result["community_annual_energy_summary_df"].to_csv(
@@ -346,7 +349,11 @@ def build_streamlit_output_package(result: dict[str, Any], run_dir: Path) -> dic
     result["candidate_community_summary_df"].to_csv(
         results_dir / "candidate_community_summary.csv", index=False
     )
-    metadata = result["runtime_metadata"]
+    metadata = {
+        key: value
+        for key, value in result["runtime_metadata"].items()
+        if key != "energy_label_effect_used"
+    }
     manifest = {
         **metadata,
         "n_input_buildings": int(len(result["cleaned_input_df"])),
