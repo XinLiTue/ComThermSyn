@@ -44,6 +44,11 @@ unsupported.
 The deploy directory can be copied by itself to another computer. It does not require the
 Project directory, raw Dalen/RVO data, training outputs, or project logs at runtime.
 
+Reusable, reviewed examples are stored under `precomputed_runs/` and registered in
+`precomputed_runs/registry.json`. The Load Results page reads this registry directly. The
+70-house example uses only the deployment input metadata in
+`sample_inputs/dalen_70_building_community.csv`; fitted RCAQ targets are not generator inputs.
+
 From inside the copied deploy directory, start the web application with:
 
     uv run streamlit run app.py

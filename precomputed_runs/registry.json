@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "runs": [
+    {
+      "run_id": "dalen_70_lhs_fast_v1",
+      "label": "70-house demonstration (Fast candidate-LHS)",
+      "description": "A reusable 70-house demonstration generated from construction year and floor area metadata. Fitted RCAQ targets are not used as generator inputs; two source A+++ labels are normalized to the deployment category A.",
+      "directory": "dalen_70_lhs_fast_v1",
+      "input_csv": "sample_inputs/dalen_70_building_community.csv",
+      "building_count": 70,
+      "sampling_mode": "lhs_fast"
+    }
+  ]
+}

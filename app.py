@@ -48,6 +48,12 @@ SAMPLING_METHODS = {
         "community nearest the robust centre.",
     ),
 }
+SAMPLING_MODE_HINTS = {
+    "lhs_fast": "Quick generation",
+    "e4_rank_lhs_v1": "Balanced community diversity",
+    "e4_complete_row_v1": "Observed joint patterns",
+    "full_mc": "Broad but slow",
+}
 
 
 st.set_page_config(
@@ -196,6 +202,8 @@ st.markdown(
 BASE_DIR = Path(__file__).resolve().parent
 DEFAULT_ARTIFACT_ROOT = BASE_DIR / "artifacts_public"
 DEFAULT_OUTPUT_ROOT = BASE_DIR / "streamlit_demo_outputs" / "jobs"
+PRECOMPUTED_RUNS_DIR = BASE_DIR / "precomputed_runs"
+PRECOMPUTED_RUNS_REGISTRY = PRECOMPUTED_RUNS_DIR / "registry.json"
 INTRO_DIR = BASE_DIR / "Intro"
 BALLUM_RESULT_PATH = BASE_DIR / "real_cases" / "ballum_real_case_result.json"
 INTRO_SLIDE_COUNT = 6
@@ -251,6 +259,28 @@ def safe_run_id(raw_run_id: str) -> str:
     if not re.fullmatch(r"[A-Za-z0-9_-]+", run_id):
         raise ValueError("run_id may only contain letters, numbers, underscores, and hyphens.")
     return run_id
+
+
+def registered_precomputed_runs() -> dict[str, dict[str, Any]]:
+    registry = load_json(PRECOMPUTED_RUNS_REGISTRY) or {}
+    registered: dict[str, dict[str, Any]] = {}
+    root = PRECOMPUTED_RUNS_DIR.resolve()
+    for entry in registry.get("runs", []):
+        try:
+            run_id = safe_run_id(str(entry["run_id"]))
+            directory = Path(str(entry.get("directory", run_id)))
+            if directory.is_absolute() or ".." in directory.parts:
+                continue
+            run_dir = (PRECOMPUTED_RUNS_DIR / directory).resolve()
+            run_dir.relative_to(root)
+        except (KeyError, TypeError, ValueError):
+            continue
+        registered[run_id] = {
+            **entry,
+            "run_id": run_id,
+            "run_dir": run_dir,
+        }
+    return registered
 
 
 def default_input_table(schema: dict[str, Any]) -> pd.DataFrame:
@@ -1097,7 +1127,7 @@ with tab_submit:
     selected_sampling_mode = st.selectbox(
         "Sampling mode",
         list(SAMPLING_METHODS),
-        format_func=lambda mode: SAMPLING_METHODS[mode][0]
+        format_func=lambda mode: f"{SAMPLING_METHODS[mode][0]} — {SAMPLING_MODE_HINTS[mode]}"
         + (" (default)" if mode == "lhs_fast" else ""),
         index=0,
     )
@@ -1184,6 +1214,24 @@ with tab_submit:
 
 with tab_load:
     st.subheader("Load Results")
+    precomputed_runs = registered_precomputed_runs()
+    if precomputed_runs:
+        selected_precomputed_id = st.selectbox(
+            "Precomputed example",
+            options=list(precomputed_runs),
+            format_func=lambda run_id: str(
+                precomputed_runs[run_id].get("label", run_id)
+            ),
+            key="precomputed_run_selector",
+        )
+        selected_precomputed = precomputed_runs[selected_precomputed_id]
+        st.caption(str(selected_precomputed.get("description", "")))
+        if st.button("Load precomputed example", key="load_precomputed_result"):
+            st.session_state["loaded_run_id"] = selected_precomputed_id
+            st.session_state["loaded_run_dir"] = selected_precomputed["run_dir"]
+
+        st.markdown("**Or load a submitted run**")
+
     load_run_id_input = st.text_input(
         "Run ID to load",
         value=st.session_state.get("last_completed_run_id", "CPN8_001"),
