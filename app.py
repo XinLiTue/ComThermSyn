@@ -1214,8 +1214,27 @@ with tab_submit:
 
 with tab_load:
     st.subheader("Load Results")
+    st.markdown("**Submitted case**")
+    load_run_id_input = st.text_input(
+        "Run ID to load",
+        value=st.session_state.get("last_completed_run_id", "CPN8_001"),
+    )
+    if st.button("Load Results"):
+        try:
+            load_run_id = safe_run_id(load_run_id_input)
+            loaded_run_dir = output_root / load_run_id
+            st.session_state["loaded_run_id"] = load_run_id
+            st.session_state["loaded_run_dir"] = loaded_run_dir
+        except ValueError as exc:
+            st.warning(str(exc))
+
     precomputed_runs = registered_precomputed_runs()
     if precomputed_runs:
+        st.markdown("**Or explore a precomputed case**")
+        st.caption(
+            "To see the calculated results for a real community input, "
+            "open the precomputed example below."
+        )
         selected_precomputed_id = st.selectbox(
             "Precomputed example",
             options=list(precomputed_runs),
@@ -1229,21 +1248,6 @@ with tab_load:
         if st.button("Load precomputed example", key="load_precomputed_result"):
             st.session_state["loaded_run_id"] = selected_precomputed_id
             st.session_state["loaded_run_dir"] = selected_precomputed["run_dir"]
-
-        st.markdown("**Or load a submitted run**")
-
-    load_run_id_input = st.text_input(
-        "Run ID to load",
-        value=st.session_state.get("last_completed_run_id", "CPN8_001"),
-    )
-    if st.button("Load Results"):
-        try:
-            load_run_id = safe_run_id(load_run_id_input)
-            loaded_run_dir = output_root / load_run_id
-            st.session_state["loaded_run_id"] = load_run_id
-            st.session_state["loaded_run_dir"] = loaded_run_dir
-        except ValueError as exc:
-            st.warning(str(exc))
 
     if "loaded_run_dir" in st.session_state:
         loaded_run_id = st.session_state.get("loaded_run_id", "")
